@@ -1,4 +1,4 @@
-import { Role } from 'src/shares/enum/admin.enum';
+import { AdminStatus, Role } from 'src/shares/enum/admin.enum';
 import {
   Entity,
   Column,
@@ -33,8 +33,14 @@ export class Admin {
   })
   role: Role;
 
-  @Column()
-  status: boolean;
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enum: AdminStatus,
+    nullable: false,
+    default: AdminStatus.INACTIVE,
+  })
+  status: AdminStatus;
 
   @CreateDateColumn()
   createdAt: Date;

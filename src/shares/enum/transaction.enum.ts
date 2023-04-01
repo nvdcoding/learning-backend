@@ -3,6 +3,6 @@ export enum Wallet {
   ZALOPAY = 'ZALOPAY',
 }
 export enum TransactionStatus {
-  PENDING = 0,
-  PROCESSED = 1,
+  PENDING = '0',
+  PROCESSED = '1',
 }
