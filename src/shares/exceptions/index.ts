@@ -1,6 +1,11 @@
 import { emailConfig } from 'src/configs/email.config';
 
 export const httpErrors = {
+  // AUTH
+  UNAUTHORIZED: {
+    message: 'Unauthorized',
+    code: 'ERR_AUTH_001',
+  },
   // User
   USER_EXIST: {
     message: 'User exist',
@@ -18,6 +23,15 @@ export const httpErrors = {
     message: 'Email or password not match',
     code: 'ERR_USER_004',
   },
+  //ADMIN
+  ADMIN_LOGIN_FAIL: {
+    message: 'Username or password not match',
+    code: 'ERR_ADMIN_004',
+  },
+  ADMIN_NOT_ACTIVE: {
+    message: 'Account is not active',
+    code: 'ERR_USER_003',
+  },
   // Email
   WAIT_TO_RESEND: {
     message: `Please wait for ${emailConfig.registerTTL} seconds to resend`,
@@ -31,5 +45,15 @@ export const httpErrors = {
   REGISTER_TOKEN_NOT_MATCH: {
     message: `Register token not match`,
     code: `ERR_REGISTER_002`,
+  },
+
+  // COURSE
+  COURSE_FOUND: {
+    message: `Course found!`,
+    code: `ERR_COURSE_001`,
+  },
+  COURSE_NOT_FOUND: {
+    message: `Course not found!`,
+    code: `ERR_COURSE_002`,
   },
 };

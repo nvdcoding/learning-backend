@@ -1,4 +1,4 @@
-import { Path } from 'src/shares/enum/course.enum';
+import { CourseStatus, CourseType, Path } from 'src/shares/enum/course.enum';
 import {
   Entity,
   Column,
@@ -53,6 +53,28 @@ export class Course extends BaseEntity {
     type: 'text',
   })
   requirement: string;
+
+  @Column({
+    name: 'price',
+    type: 'integer',
+  })
+  price: number;
+
+  @Column({
+    name: 'type',
+    type: 'enum',
+    enum: CourseType,
+  })
+  type: CourseType;
+
+  @Column({
+    name: 'status',
+    type: 'enum',
+    enum: CourseStatus,
+    default: CourseStatus.ACIVE,
+    nullable: false,
+  })
+  status: CourseStatus;
 
   @OneToMany(() => UserCourse, (UserCourse) => UserCourse.course)
   userCourses: UserCourse[];

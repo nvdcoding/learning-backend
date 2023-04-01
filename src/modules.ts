@@ -5,16 +5,18 @@ import { CacheModule, Logger } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import * as redisStore from 'cache-manager-redis-store';
-import { ConsoleModule } from 'nestjs-console';
-import { join } from 'path';
+import { CommandModule } from 'nestjs-command';
 import { DatabaseCommonModule } from 'src/models/database-common';
-import { emailConfig } from './configs/email.config';
 import { redisConfig } from './configs/redis.config';
+import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CourseModule } from './modules/course/course.module';
 import { MailModule } from './modules/mail/mail.module';
+import { UserModule } from './modules/user/user.module';
 const Modules = [
   Logger,
   TypeOrmModule.forRoot(),
+  CommandModule,
   DatabaseCommonModule,
   ConfigModule.forRoot(),
   CacheModule.register({
@@ -26,7 +28,9 @@ const Modules = [
     redis: redisConfig,
   }),
   MailModule,
-  ConsoleModule,
   AuthModule,
+  CourseModule,
+  UserModule,
+  AdminModule,
 ];
 export default Modules;

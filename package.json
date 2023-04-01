@@ -21,7 +21,9 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js --config src/ormconfig.ts",
     "migration": "yarn typeorm migration:run",
     "migration:create": "yarn typeorm migration:create -n",
-    "migration:revert": "yarn typeorm migration:revert"
+    "migration:revert": "yarn typeorm migration:revert",
+    "console:dev": "ts-node -r tsconfig-paths/register src/console.ts",
+    "console": "node dist/console.js"
   },
   "dependencies": {
     "@nestjs-modules/mailer": "^1.7.1",
@@ -48,13 +50,16 @@
     "cache-manager-redis-store": "2.0.0",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
+    "commander": "7.2.0",
     "dayjs": "^1.11.3",
     "detect-ts-node": "^1.0.5",
     "dotenv": "^16.0.3",
     "hbs": "^4.2.0",
     "ioredis": "^4.28.5",
+    "jwt-decode": "^3.1.2",
     "mysql2": "^2.3.3",
-    "nestjs-console": "^7.0.1",
+    "nestjs-command": "^3.1.1",
+    "nestjs-console": "5.0.1",
     "nodemailer": "^6.9.1",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.0",
@@ -67,7 +72,8 @@
     "swagger-ui-express": "^4.4.0",
     "typeorm": "^0.2.37",
     "typeorm-seeding": "^1.6.1",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yargs": "^17.7.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

@@ -5,13 +5,15 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
 import { AuthService } from './auth.service';
 import { ActiveUserDto } from './dto/active-user.dto';
-import { LoginDto } from './dto/login.dto';
+import { CreateAdminDto } from './dto/create-admin.dto';
+import { AdminLoginDto, LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 
@@ -44,5 +46,15 @@ export class AuthController {
   @Post('/login')
   async login(@Body() body: LoginDto): Promise<Response> {
     return this.authService.userLogin(body);
+  }
+
+  @Post('/admin-login')
+  async adminLogin(@Body() body: AdminLoginDto): Promise<Response> {
+    return this.authService.adminLogin(body);
+  }
+
+  @Post('/create-admin')
+  async createAdmin(@Query() query: CreateAdminDto) {
+    return this.authService.createAdmin(query.username, query.password);
   }
 }

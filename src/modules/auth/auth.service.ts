@@ -20,7 +20,10 @@ import { authConfig } from 'src/configs/auth.config';
 import { ResendEmailRegisterDto } from './dto/resend-confirmation.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtPayload } from './interfaces/payload.interface';
+import { IJwtAdminPayload, IJwtPayload } from './interfaces/payload.interface';
+import { AdminRepository } from 'src/models/repositories/admin.repository';
+import { Role, AdminStatus } from 'src/shares/enum/admin.enum';
+import { CreateAdminDto } from './dto/create-admin.dto';
 
 @Injectable()
 export class AuthService {
@@ -28,6 +31,7 @@ export class AuthService {
 
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly adminRepositoty: AdminRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
     private readonly mailService: MailService,
     private readonly jwtService: JwtService,
@@ -185,6 +189,73 @@ export class AuthService {
       email,
       verifyStatus: userExisted.verifyStatus,
     } as IJwtPayload;
+
+    const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: refreshJwt,
+      expiresIn: '7d',
+    });
+    return {
+      ...httpResponse.LOGIN_SUCCESS,
+      data: {
+        accessToken,
+        refreshToken,
+      },
+    };
+  }
+
+  async createAdmin(username: string, password: string): Promise<void> {
+    const admin = await this.adminRepositoty.findOne({ username });
+    if (admin) {
+      throw new Error('Admin found');
+    }
+    const passwordHash = await bcrypt.hash(password, +authConfig.salt);
+    await this.adminRepositoty.insert({
+      username,
+      password: passwordHash,
+      role: Role.ADMIN,
+      status: AdminStatus.ACTIVE,
+    });
+  }
+
+  async adminLogin(body: CreateAdminDto): Promise<Response> {
+    const { username, password } = body;
+
+    const adminExisted = await this.adminRepositoty.findOne({
+      where: { username },
+      select: ['id', 'username', 'role', 'password'],
+    });
+
+    if (!adminExisted)
+      throw new HttpException(
+        httpErrors.ADMIN_LOGIN_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    if ([AdminStatus.INACTIVE].includes(adminExisted.status))
+      throw new HttpException(
+        httpErrors.ADMIN_NOT_ACTIVE,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const comparePassword = await bcrypt.compare(
+      password,
+      adminExisted.password,
+    );
+
+    if (!comparePassword)
+      throw new HttpException(
+        httpErrors.USER_LOGIN_FAIL,
+        HttpStatus.BAD_REQUEST,
+      );
+
+    const { refreshJwt } = authConfig;
+    const payload = {
+      id: adminExisted.id,
+      role: adminExisted.role,
+      status: adminExisted.status,
+      username: adminExisted.username,
+    } as IJwtAdminPayload;
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });
     const refreshToken = this.jwtService.sign(payload, {

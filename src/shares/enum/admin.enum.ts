@@ -1,6 +1,7 @@
 export enum Role {
   ADMIN = 'ADMIN',
   MOD = 'MOD',
+  NONE = 'NONE',
 }
 
 export enum AdminStatus {
