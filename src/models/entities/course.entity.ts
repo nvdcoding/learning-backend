@@ -1,4 +1,10 @@
-import { CourseStatus, CourseType, Path } from 'src/shares/enum/course.enum';
+import {
+  CourseLanguage,
+  CourseLevel,
+  CourseStatus,
+  CourseType,
+  Path,
+} from 'src/shares/enum/course.enum';
 import {
   Entity,
   Column,
@@ -34,6 +40,23 @@ export class Course extends BaseEntity {
     type: 'text',
   })
   goal: string;
+
+  @Column({
+    name: 'language',
+    type: 'enum',
+    enum: CourseLanguage,
+    nullable: false,
+  })
+  language: CourseLanguage;
+
+  @Column({
+    name: 'level',
+    type: 'enum',
+    enum: CourseLevel,
+    nullable: false,
+    default: CourseLevel.BEGIN,
+  })
+  level: CourseLevel;
 
   @Column({
     type: 'varchar',
