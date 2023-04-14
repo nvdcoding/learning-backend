@@ -32,6 +32,8 @@ export class AdminModAuthGuard extends AuthGuard('jwt') {
     }
 
     const adminJwt = await this.jtwSv.verify(token[1]);
+    console.log(adminJwt);
+
     const admin = await this.adminService.getAdminByIdAndUsername(
       adminJwt.id,
       adminJwt.username,
