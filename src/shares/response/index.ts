@@ -35,4 +35,13 @@ export const httpResponse = {
     message: 'Course deleted!',
     code: 'COURSE_003',
   },
+  // LESSON:
+  CREATE_LESSON_SUCCES: {
+    message: 'Lesson created',
+    code: 'LESSON_001',
+  },
+  UPDATE_LESSON_SUCCES: {
+    message: 'Lesson updated',
+    code: 'LESSON_002',
+  },
 };
