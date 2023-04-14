@@ -56,4 +56,9 @@ export const httpErrors = {
     message: `Course not found!`,
     code: `ERR_COURSE_002`,
   },
+  // LESSON
+  LESSON_NOT_FOUND: {
+    message: `Lesson not found`,
+    code: `ERR_LESSON_001`,
+  },
 };

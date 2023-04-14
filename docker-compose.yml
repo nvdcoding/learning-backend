@@ -13,10 +13,10 @@ services:
     volumes:
       - ./.docker/mysql:/var/lib/mysql
     ports:
-      - 3308:3306
+      - 3309:3306
 
   redis:
     image: 'redis:6-alpine'
     container_name: learnit-redis
     ports:
-      - 6381:6379
+      - 6382:6379
