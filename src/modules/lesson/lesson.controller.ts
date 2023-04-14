@@ -12,9 +12,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
-import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
-import { GetLessonDto } from './dtos/get-lesson.dto';
 import { UpdateLessonDto } from './dtos/update-lesson.dto';
 import { LessonService } from './lesson.service';
 
