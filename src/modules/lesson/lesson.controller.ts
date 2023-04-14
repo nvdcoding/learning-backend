@@ -26,15 +26,17 @@ export class LessonController {
 
   @Get('/:courseId')
   @UseGuards(IsLoginAuthGuard)
-  async getCourseLesson(@Param() courseId: number): Promise<Response> {
+  async getCourseLesson(
+    @Param('courseId') courseId: number,
+  ): Promise<Response> {
     return this.lessonService.getLessonOfCourse(courseId);
   }
 
   @Get('/:courseId/:lessonId')
   @UseGuards(IsLoginAuthGuard)
   async GetOneLesson(
-    @Param() courseId: number,
-    @Param() lessonId: number,
+    @Param('courseId') courseId: number,
+    @Param('lessonId') lessonId: number,
   ): Promise<Response> {
     return this.lessonService.getOneLesson(courseId, lessonId);
   }
@@ -45,7 +47,7 @@ export class LessonController {
     return this.lessonService.createLesson(body);
   }
 
-  @Put('/:lessonId')
+  @Put('')
   @UseGuards(AdminModAuthGuard)
   async updateLesson(@Body() body: UpdateLessonDto): Promise<Response> {
     return this.lessonService.updateLesson(body);
