@@ -17,3 +17,15 @@ export enum CourseStatus {
   ACIVE = '1',
   INACTIVE = '0',
 }
+
+export enum CourseLevel {
+  BEGIN = '0',
+  MIDDLE = '1',
+  EXPERT = '2',
+}
+
+export enum CourseLanguage {
+  C = 'c',
+  JAVA = 'java',
+  JS = 'javascript',
+}
