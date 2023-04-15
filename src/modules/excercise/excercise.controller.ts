@@ -16,7 +16,7 @@ export class ExcerciseController {
   //   // return this.courseService.getAllCourses();
   // }
 
-  @Post('/:lessionId')
+  @Post('/:lessonId')
   @UseGuards(AdminModAuthGuard)
   async createExcercise(
     @Param('lessonId') lessonId: number,
