@@ -37,7 +37,7 @@ export class Exercise {
   @OneToMany(() => UserExercise, (userExercise) => userExercise.exercise)
   userExercises: [];
 
-  @OneToMany(() => TestCase, (testCase) => testCase.exercise)
+  @OneToMany(() => TestCase, (testCase) => testCase.exercise, { cascade: true })
   testCases: [];
 
   @CreateDateColumn()
