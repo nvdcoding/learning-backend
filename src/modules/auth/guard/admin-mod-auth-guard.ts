@@ -30,6 +30,7 @@ export class AdminModAuthGuard extends AuthGuard('jwt') {
     if (token.length < 2 || token[0] != 'Bearer') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
+    console.log(token);
 
     const adminJwt = await this.jtwSv.verify(token[1]);
     console.log(adminJwt);
