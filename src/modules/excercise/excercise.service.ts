@@ -19,6 +19,12 @@ export class ExcerciseService {
 
   async createExcercise(lessonId: number, body: CreateExcerciseDto) {
     const { question, description, testcases } = body;
+    if (!lessonId) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
     const lesson = await this.lessonRepository.findOne({
       where: {
         id: lessonId,
