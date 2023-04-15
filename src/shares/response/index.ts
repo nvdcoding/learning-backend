@@ -44,4 +44,13 @@ export const httpResponse = {
     message: 'Lesson updated',
     code: 'LESSON_002',
   },
+  // EXCERCISE:
+  CREATE_EXCERCISE_SUCCES: {
+    message: 'Excercise created',
+    code: 'EXCERCISE_001',
+  },
+  UPDATE_EXCERCISE_SUCCES: {
+    message: 'Excercise updated',
+    code: 'EXCERCISE_002',
+  },
 };
