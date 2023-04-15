@@ -11,6 +11,7 @@ import { redisConfig } from './configs/redis.config';
 import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { CourseModule } from './modules/course/course.module';
+import { ExcerciseModule } from './modules/excercise/excercise.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { MailModule } from './modules/mail/mail.module';
 import { UserModule } from './modules/user/user.module';
@@ -34,5 +35,6 @@ const Modules = [
   UserModule,
   AdminModule,
   LessonModule,
+  ExcerciseModule,
 ];
 export default Modules;

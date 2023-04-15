@@ -26,4 +26,4 @@ import { ExcerciseService } from './excercise.service';
   providers: [ExcerciseService],
   controllers: [ExcerciseController],
 })
-export class CourseModule {}
+export class ExcerciseModule {}
