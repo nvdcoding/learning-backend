@@ -54,6 +54,13 @@ export class LessonService {
       id: lessonId,
     });
 
+    if (!data) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
     return { ...httpResponse.GET_SUCCES, data };
   }
 

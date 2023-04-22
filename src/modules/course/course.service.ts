@@ -77,4 +77,16 @@ export class CourseService {
     await this.courseRepository.softDelete(courseId);
     return { ...httpResponse.DELETE_COURSE_SUCCESS };
   }
+
+  // async registerCourse(courseId: number): Promise<Response> {
+  //   const course = await this.courseRepository.findOne({
+  //     where: { id: courseId },
+  //   });
+  //   if (!course) {
+  //     throw new HttpException(
+  //       httpErrors.COURSE_NOT_FOUND,
+  //       HttpStatus.BAD_REQUEST,
+  //     );
+  //   }
+  // }
 }

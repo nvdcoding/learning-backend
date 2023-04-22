@@ -13,6 +13,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
+import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dtos/create-course.dto';
 import { UpdateCourseDto } from './dtos/update-course.dto';
@@ -38,6 +39,10 @@ export class CourseController {
   async createCourse(@Body() body: CreateCourseDto) {
     return this.courseService.createCourse(body);
   }
+
+  @Post('/register')
+  @UseGuards(UserAuthGuard)
+  async registerCourse() {}
 
   @Put('/:courseId')
   @UseGuards(AdminModAuthGuard)
