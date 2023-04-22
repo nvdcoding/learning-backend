@@ -16,14 +16,25 @@ export class CourseService {
   }
 
   async getOneCourse(courseId: number): Promise<Response> {
-    const data = await this.courseRepository.findOne(courseId);
+    const data = await this.courseRepository.findOne(courseId, {
+      relations: ['userCourses', 'lessons'],
+    });
+
     if (!data) {
       throw new HttpException(
         httpErrors.COURSE_NOT_FOUND,
         HttpStatus.BAD_REQUEST,
       );
     }
-    return { ...httpResponse.GET_SUCCES, data };
+    const totalUsers = data.userCourses.length;
+    const firstLesson = data.lessons.length
+      ? { name: data.lessons[0].name, id: data.lessons[0].id }
+      : null;
+
+    delete data.lessons;
+    delete data.userCourses;
+    const responseData = { ...data, totalUsers, firstLesson };
+    return { ...httpResponse.GET_SUCCES, data: responseData };
   }
 
   async createCourse(body: CreateCourseDto): Promise<Response> {

@@ -18,6 +18,12 @@ export class LessonService {
   ) {}
 
   async getLessonOfCourse(courseId: number, role: string) {
+    if (!courseId) {
+      throw new HttpException(
+        httpErrors.COURSE_ID_NOT_DEFINED,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     // check user cos course do khong
     const where = {
       id: courseId,
@@ -43,21 +49,8 @@ export class LessonService {
     return { ...httpResponse.GET_SUCCES, data };
   }
 
-  async getOneLesson(courseId: number, lessonId: number) {
-    const course = await this.courseRepository.findOne({
-      where: {
-        id: courseId,
-        status: CourseStatus.ACTIVE,
-      },
-    });
-    if (!course) {
-      throw new HttpException(
-        httpErrors.COURSE_NOT_FOUND,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+  async getOneLesson(lessonId: number) {
     const data = await this.lessonRepository.find({
-      course,
       id: lessonId,
     });
 

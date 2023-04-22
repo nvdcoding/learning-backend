@@ -22,7 +22,7 @@ export class AdminAuthGuard extends AuthGuard('jwt') {
     super();
   }
 
-  async canActivate(context: ExecutionContext): Promise<boolean> {
+  async canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const { headers } = request;
     if (!headers?.authorization) {
@@ -44,9 +44,9 @@ export class AdminAuthGuard extends AuthGuard('jwt') {
           HttpStatus.UNAUTHORIZED,
         );
       }
+      return adminJwt;
     } catch (error) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    return true;
   }
 }

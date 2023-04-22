@@ -15,7 +15,43 @@ export class ExcerciseService {
     private readonly lessonRepository: LessonRepository,
     private readonly testcaseRepository: TestcaseRepository,
   ) {}
-  async getExcercises(lessonId: number) {}
+  async getExcercises(lessonId: number) {
+    const lesson = await this.lessonRepository.findOne(lessonId, {
+      relations: ['exercises'],
+    });
+    if (!lesson) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return { ...httpResponse.GET_SUCCES, data: lesson };
+  }
+
+  async getOneExcercise(lessonId: number, exerciseId: number) {
+    const lesson = await this.lessonRepository.findOne(lessonId);
+    if (!lesson) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const exercise = await this.excerciseRepository.findOne({
+      where: {
+        lesson,
+        id: exerciseId,
+      },
+      relations: ['testCases'],
+    });
+    if (!exercise) {
+      throw new HttpException(
+        httpErrors.EXERCISE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    return { ...httpResponse.GET_SUCCES, data: exercise };
+  }
 
   async createExcercise(lessonId: number, body: CreateExcerciseDto) {
     const { question, description, testcases } = body;
@@ -36,14 +72,16 @@ export class ExcerciseService {
         HttpStatus.NOT_FOUND,
       );
     }
-
-    const testcase = await this.testcaseRepository.save([...testcases]);
-    await this.excerciseRepository.save({
+    const exercise = await this.excerciseRepository.save({
       question,
       description,
-      testcase,
       lesson,
     });
+    const testCases = await this.testcaseRepository.save([
+      ...testcases.map((e) => {
+        return { ...e, exercise };
+      }),
+    ]);
     return httpResponse.CREATE_EXCERCISE_SUCCES;
   }
 }
