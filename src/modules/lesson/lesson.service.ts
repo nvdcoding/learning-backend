@@ -5,6 +5,7 @@ import { CourseStatus } from 'src/shares/enum/course.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
+import { In } from 'typeorm';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
 import { GetLessonDto } from './dtos/get-lesson.dto';
 import { UpdateLessonDto } from './dtos/update-lesson.dto';
@@ -16,12 +17,18 @@ export class LessonService {
     private readonly courseRepository: CourseRepository,
   ) {}
 
-  async getLessonOfCourse(courseId: number) {
+  async getLessonOfCourse(courseId: number, role: string) {
     // check user cos course do khong
+    const where = {
+      id: courseId,
+    };
     const course = await this.courseRepository.findOne({
       where: {
-        id: courseId,
-        status: CourseStatus.ACIVE,
+        ...where,
+        status:
+          role === 'admin'
+            ? In([CourseStatus.ACTIVE, CourseStatus.INACTIVE])
+            : CourseStatus.ACTIVE,
       },
     });
     if (!course) {
@@ -40,7 +47,7 @@ export class LessonService {
     const course = await this.courseRepository.findOne({
       where: {
         id: courseId,
-        status: CourseStatus.ACIVE,
+        status: CourseStatus.ACTIVE,
       },
     });
     if (!course) {
@@ -59,8 +66,9 @@ export class LessonService {
 
   async createLesson(body: CreateLessonDto): Promise<Response> {
     const { courseId, name, link } = body;
+
     const course = await this.courseRepository.findOne({
-      where: { id: courseId, status: CourseStatus.ACIVE },
+      where: { id: courseId },
     });
     if (!course) {
       throw new HttpException(

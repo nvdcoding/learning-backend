@@ -32,21 +32,21 @@ export class AdminAuthGuard extends AuthGuard('jwt') {
     if (token.length < 2 || token[0] != 'Bearer') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-
-    const adminJwt = await this.jtwSv.verify(token[1]);
-    const admin = await this.adminService.getAdminByIdAndUsername(
-      adminJwt.id,
-      adminJwt.username,
-    );
-    if (!admin || admin.role !== Role.ADMIN) {
+    try {
+      const adminJwt = await this.jtwSv.verify(token[1]);
+      const admin = await this.adminService.getAdminByIdAndUsername(
+        adminJwt.id,
+        adminJwt.username,
+      );
+      if (!admin || admin.role !== Role.ADMIN) {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+    } catch (error) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-
-    const result = super.canActivate(context);
-    if (isObservable(result)) {
-      return firstValueFrom(result);
-    } else {
-      return result;
-    }
+    return true;
   }
 }

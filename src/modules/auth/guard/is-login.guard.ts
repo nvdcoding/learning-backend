@@ -6,14 +6,11 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
-import { firstValueFrom, isObservable } from 'rxjs';
-import { AdminService } from 'src/modules/admin/admin.service';
-import { Role } from 'src/shares/enum/admin.enum';
 import { httpErrors } from 'src/shares/exceptions';
 
 @Injectable()
 export class IsLoginAuthGuard extends AuthGuard('jwt') {
-  constructor() {
+  constructor(private readonly jwtSv: JwtService) {
     super();
   }
 
@@ -27,11 +24,11 @@ export class IsLoginAuthGuard extends AuthGuard('jwt') {
     if (token.length < 2 || token[0] != 'Bearer') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-    const result = super.canActivate(context);
-    if (isObservable(result)) {
-      return firstValueFrom(result);
-    } else {
-      return result;
+    try {
+      const jwt = await this.jwtSv.verify(token[1]);
+    } catch (error) {
+      throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
+    return true;
   }
 }

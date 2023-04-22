@@ -4,12 +4,14 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AdminModule } from '../admin/admin.module';
 import { AuthModule } from '../auth/auth.module';
 import { MailModule } from '../mail/mail.module';
+import { UserModule } from '../user/user.module';
 import { LessonController } from './lesson.controller';
 import { LessonService } from './lesson.service';
 
 @Module({
   imports: [
     AdminModule,
+    UserModule,
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],
       useFactory: (configService: ConfigService) =>

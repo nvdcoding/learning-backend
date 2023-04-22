@@ -94,7 +94,7 @@ export class Course extends BaseEntity {
     name: 'status',
     type: 'enum',
     enum: CourseStatus,
-    default: CourseStatus.ACIVE,
+    default: CourseStatus.ACTIVE,
     nullable: false,
   })
   status: CourseStatus;

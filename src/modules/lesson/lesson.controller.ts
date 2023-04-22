@@ -12,6 +12,7 @@ import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
+import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
 import { UpdateLessonDto } from './dtos/update-lesson.dto';
 import { LessonService } from './lesson.service';
@@ -22,12 +23,20 @@ import { LessonService } from './lesson.service';
 export class LessonController {
   constructor(private readonly lessonService: LessonService) {}
 
-  @Get('/:courseId')
-  @UseGuards(IsLoginAuthGuard)
-  async getCourseLesson(
+  @Get('/user/:courseId')
+  @UseGuards(UserAuthGuard)
+  async userGetCourseLesson(
     @Param('courseId') courseId: number,
   ): Promise<Response> {
-    return this.lessonService.getLessonOfCourse(courseId);
+    return this.lessonService.getLessonOfCourse(courseId, 'user');
+  }
+
+  @Get('/admin/:courseId')
+  @UseGuards(AdminModAuthGuard)
+  async adminGetCourseLesson(
+    @Param('courseId') courseId: number,
+  ): Promise<Response> {
+    return this.lessonService.getLessonOfCourse(courseId, 'admin');
   }
 
   @Get('/:courseId/:lessonId')

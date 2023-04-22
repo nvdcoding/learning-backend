@@ -14,7 +14,7 @@ export enum CourseType {
 }
 
 export enum CourseStatus {
-  ACIVE = '1',
+  ACTIVE = '1',
   INACTIVE = '0',
 }
 
