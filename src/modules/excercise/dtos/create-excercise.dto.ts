@@ -6,10 +6,16 @@ import {
   ArrayMinSize,
   IsArray,
   ValidateNested,
+  IsNumber,
 } from 'class-validator';
 import { CreateTestcaseDto } from './create-testcase.dto';
 
 export class CreateExcerciseDto {
+  @ApiProperty()
+  @IsNumber()
+  @IsNotEmpty()
+  lessonId: number;
+
   @ApiProperty()
   @IsString()
   @IsNotEmpty()

@@ -29,17 +29,9 @@ export class ExcerciseService {
     return { ...httpResponse.GET_SUCCES, data: lesson };
   }
 
-  async getOneExcercise(lessonId: number, exerciseId: number) {
-    const lesson = await this.lessonRepository.findOne(lessonId);
-    if (!lesson) {
-      throw new HttpException(
-        httpErrors.LESSON_NOT_FOUND,
-        HttpStatus.NOT_FOUND,
-      );
-    }
+  async getOneExcercise(exerciseId: number) {
     const exercise = await this.excerciseRepository.findOne({
       where: {
-        lesson,
         id: exerciseId,
       },
       relations: ['testCases'],
