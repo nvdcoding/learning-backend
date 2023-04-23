@@ -49,9 +49,18 @@ export class ExcerciseController {
     return this.excerciseService.getExcercises(+query.lessionId, userId);
   }
 
-  @Get('/:exerciseId')
+  @Get('/user/:exerciseId')
   @UseGuards(UserAuthGuard)
-  async getOneExercise(@Param('exerciseId') exerciseId: number) {
+  async userGetOneExercise(
+    @Param('exerciseId') exerciseId: number,
+    @UserID() userId: number,
+  ) {
+    return this.excerciseService.getOneExcercise(exerciseId, userId);
+  }
+
+  @Get('/admin/:exerciseId')
+  @UseGuards(AdminModAuthGuard)
+  async adminGetOneExercise(@Param('exerciseId') exerciseId: number) {
     return this.excerciseService.getOneExcercise(exerciseId);
   }
 }

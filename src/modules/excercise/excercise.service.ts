@@ -38,18 +38,26 @@ export class ExcerciseService {
     return { ...httpResponse.GET_SUCCES, data: lesson.exercises };
   }
 
-  async getOneExcercise(exerciseId: number) {
+  async getOneExcercise(exerciseId: number, userId?: number) {
     const exercise = await this.excerciseRepository.findOne({
       where: {
         id: exerciseId,
       },
-      relations: ['testCases'],
+      relations: ['testCases', 'lesson', 'lesson.course'],
     });
     if (!exercise) {
       throw new HttpException(
         httpErrors.EXERCISE_NOT_FOUND,
         HttpStatus.NOT_FOUND,
       );
+    }
+    if (userId) {
+      if (!this.courseService.isHaveCourse(exercise.lesson.course.id, userId)) {
+        throw new HttpException(
+          httpErrors.USER_NOT_ENROLLED_COURSE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
     return { ...httpResponse.GET_SUCCES, data: exercise };
   }
