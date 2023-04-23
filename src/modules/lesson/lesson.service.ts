@@ -56,7 +56,10 @@ export class LessonService {
       }
     }
     const data = await this.lessonRepository.find({
-      course,
+      where: {
+        course,
+      },
+      relations: ['exercises', 'course'],
     });
     return { ...httpResponse.GET_SUCCES, data };
   }
