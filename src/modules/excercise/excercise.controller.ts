@@ -14,6 +14,7 @@ import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CreateExcerciseDto } from './dtos/create-excercise.dto';
+import { DoExerciseDto } from './dtos/do-exercise.dto';
 import { GetExerciseDto } from './dtos/get-exercise.dto';
 import { ExcerciseService } from './excercise.service';
 
@@ -62,5 +63,11 @@ export class ExcerciseController {
   @UseGuards(AdminModAuthGuard)
   async adminGetOneExercise(@Param('exerciseId') exerciseId: number) {
     return this.excerciseService.getOneExcercise(exerciseId);
+  }
+
+  @Post('/do-exercise')
+  @UseGuards(UserAuthGuard)
+  async doExercise(@Body() body: DoExerciseDto, @UserID() userId: number) {
+    return this.excerciseService.doExercise(body, userId);
   }
 }

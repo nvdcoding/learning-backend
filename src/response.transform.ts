@@ -21,7 +21,7 @@ export class ResponseTransform<T>
       map((data) => {
         const baseResponse = new BaseResponse<any>();
         baseResponse.statusCode = 200;
-        baseResponse.returnValue = data;
+        baseResponse.returnValue = { ...data };
         return baseResponse;
       }),
     );

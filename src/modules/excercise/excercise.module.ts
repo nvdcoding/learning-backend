@@ -7,12 +7,13 @@ import { MailModule } from '../mail/mail.module';
 import { UserModule } from '../user/user.module';
 import { ExcerciseController } from './excercise.controller';
 import { ExcerciseService } from './excercise.service';
-
+import { HttpModule } from '@nestjs/axios';
 @Module({
   imports: [
     UserModule,
     AdminModule,
     CourseModule,
+    HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],
       useFactory: (configService: ConfigService) =>
