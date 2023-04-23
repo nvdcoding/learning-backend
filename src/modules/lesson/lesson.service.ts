@@ -1,11 +1,13 @@
 import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CourseRepository } from 'src/models/repositories/course.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
+import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { CourseStatus } from 'src/shares/enum/course.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { In } from 'typeorm';
+import { CourseService } from '../course/course.service';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
 import { GetLessonDto } from './dtos/get-lesson.dto';
 import { UpdateLessonDto } from './dtos/update-lesson.dto';
@@ -15,9 +17,11 @@ export class LessonService {
   constructor(
     private readonly lessonRepository: LessonRepository,
     private readonly courseRepository: CourseRepository,
+    private readonly userCourseRepository: UserCourseRepository,
+    private readonly courseService: CourseService,
   ) {}
 
-  async getLessonOfCourse(courseId: number, role: string) {
+  async getLessonOfCourse(courseId: number, role: string, userId?: number) {
     if (!courseId) {
       throw new HttpException(
         httpErrors.COURSE_ID_NOT_DEFINED,
@@ -43,22 +47,42 @@ export class LessonService {
         HttpStatus.NOT_FOUND,
       );
     }
+    if (userId) {
+      if (!this.courseService.isHaveCourse(courseId, userId)) {
+        throw new HttpException(
+          httpErrors.USER_NOT_ENROLLED_COURSE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
     const data = await this.lessonRepository.find({
       course,
     });
     return { ...httpResponse.GET_SUCCES, data };
   }
 
-  async getOneLesson(lessonId: number) {
-    const data = await this.lessonRepository.find({
-      id: lessonId,
-    });
+  async getOneLesson(lessonId: number, userId?: number) {
+    const data = await this.lessonRepository.findOne(
+      {
+        id: lessonId,
+      },
+      { relations: ['exercises', 'course'] },
+    );
 
     if (!data) {
       throw new HttpException(
         httpErrors.LESSON_NOT_FOUND,
         HttpStatus.NOT_FOUND,
       );
+    }
+
+    if (userId) {
+      if (!this.courseService.isHaveCourse(data.course.id, userId)) {
+        throw new HttpException(
+          httpErrors.USER_NOT_ENROLLED_COURSE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
 
     return { ...httpResponse.GET_SUCCES, data };

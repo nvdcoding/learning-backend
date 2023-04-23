@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { AdminModule } from '../admin/admin.module';
+import { CourseModule } from '../course/course.module';
 import { MailModule } from '../mail/mail.module';
 import { UserModule } from '../user/user.module';
 import { ExcerciseController } from './excercise.controller';
@@ -11,6 +12,7 @@ import { ExcerciseService } from './excercise.service';
   imports: [
     UserModule,
     AdminModule,
+    CourseModule,
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],
       useFactory: (configService: ConfigService) =>

@@ -1,11 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CourseRepository } from 'src/models/repositories/course.repository';
 import { ExcerciseRepository } from 'src/models/repositories/exercise.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
 import { TestcaseRepository } from 'src/models/repositories/testcase.repository';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
-import { Response } from 'src/shares/response/response.interface';
+import { CourseService } from '../course/course.service';
 import { CreateExcerciseDto } from './dtos/create-excercise.dto';
 
 @Injectable()
@@ -14,8 +13,9 @@ export class ExcerciseService {
     private readonly excerciseRepository: ExcerciseRepository,
     private readonly lessonRepository: LessonRepository,
     private readonly testcaseRepository: TestcaseRepository,
+    private readonly courseService: CourseService,
   ) {}
-  async getExcercises(lessonId: number) {
+  async getExcercises(lessonId: number, userId?: number) {
     const lesson = await this.lessonRepository.findOne(lessonId, {
       relations: ['exercises'],
     });
@@ -26,7 +26,16 @@ export class ExcerciseService {
       );
     }
 
-    return { ...httpResponse.GET_SUCCES, data: lesson };
+    if (userId) {
+      if (!this.courseService.isHaveCourse(lesson.course.id, userId)) {
+        throw new HttpException(
+          httpErrors.USER_NOT_ENROLLED_COURSE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+    }
+
+    return { ...httpResponse.GET_SUCCES, data: lesson.exercises };
   }
 
   async getOneExcercise(exerciseId: number) {

@@ -8,8 +8,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
+import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CreateExcerciseDto } from './dtos/create-excercise.dto';
 import { GetExerciseDto } from './dtos/get-exercise.dto';
@@ -32,10 +34,19 @@ export class ExcerciseController {
     return this.excerciseService.createExcercise(body.lessonId, body);
   }
 
-  @Get('/')
-  // @UseGuards(UserAuthGuard)
-  async getExcerciseOfLesson(@Query() query: GetExerciseDto) {
+  @Get('/admin')
+  @UseGuards(AdminModAuthGuard)
+  async adminGetExcerciseOfLesson(@Query() query: GetExerciseDto) {
     return this.excerciseService.getExcercises(+query.lessionId);
+  }
+
+  @Get('/user')
+  @UseGuards(UserAuthGuard)
+  async userGetExcerciseOfLesson(
+    @Query() query: GetExerciseDto,
+    @UserID() userId: number,
+  ) {
+    return this.excerciseService.getExcercises(+query.lessionId, userId);
   }
 
   @Get('/:exerciseId')

@@ -10,12 +10,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CourseService } from './course.service';
 import { CreateCourseDto } from './dtos/create-course.dto';
+import { RegisterCourseDto } from './dtos/register-course.dto';
 import { UpdateCourseDto } from './dtos/update-course.dto';
 
 @Controller('courses')
@@ -42,7 +44,12 @@ export class CourseController {
 
   @Post('/register')
   @UseGuards(UserAuthGuard)
-  async registerCourse() {}
+  async registerCourse(
+    @Body() body: RegisterCourseDto,
+    @UserID() userId: number,
+  ) {
+    return this.courseService.registerCourse(body.courseId, userId);
+  }
 
   @Put('/:courseId')
   @UseGuards(AdminModAuthGuard)

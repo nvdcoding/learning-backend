@@ -26,5 +26,6 @@ import { CourseService } from './course.service';
   ],
   providers: [CourseService],
   controllers: [CourseController],
+  exports: [CourseService],
 })
 export class CourseModule {}

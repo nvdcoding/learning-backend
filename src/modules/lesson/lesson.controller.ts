@@ -9,6 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
@@ -26,8 +27,15 @@ export class LessonController {
 
   @Get('/user')
   @UseGuards(UserAuthGuard)
-  async userGetCourseLesson(@Query() query: GetLessonDto): Promise<Response> {
-    return this.lessonService.getLessonOfCourse(+query.courseId, 'user');
+  async userGetCourseLesson(
+    @Query() query: GetLessonDto,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.lessonService.getLessonOfCourse(
+      +query.courseId,
+      'user',
+      userId,
+    );
   }
 
   @Get('/admin')
@@ -37,8 +45,19 @@ export class LessonController {
   }
 
   @Get('/user/:lessonId')
-  @UseGuards(IsLoginAuthGuard)
-  async GetOneLesson(@Param('lessonId') lessonId: number): Promise<Response> {
+  @UseGuards(UserAuthGuard)
+  async userGetOneLesson(
+    @Param('lessonId') lessonId: number,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.lessonService.getOneLesson(lessonId, userId);
+  }
+
+  @Get('/admin/:lessonId')
+  @UseGuards(AdminModAuthGuard)
+  async adminGetOneLesson(
+    @Param('lessonId') lessonId: number,
+  ): Promise<Response> {
     return this.lessonService.getOneLesson(lessonId);
   }
 

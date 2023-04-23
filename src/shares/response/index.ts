@@ -35,6 +35,10 @@ export const httpResponse = {
     message: 'Course deleted!',
     code: 'COURSE_003',
   },
+  REGISTER_COURSE_SUCCES: {
+    message: 'Register success',
+    code: 'COURSE_004',
+  },
   // LESSON:
   CREATE_LESSON_SUCCES: {
     message: 'Lesson created',

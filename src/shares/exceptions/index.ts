@@ -56,6 +56,14 @@ export const httpErrors = {
     message: `Course not found!`,
     code: `ERR_COURSE_002`,
   },
+  INSUFFICIENT_BALANCE: {
+    message: 'Available coin is not enough to register',
+    code: `ERR_COURSE_003`,
+  },
+  USER_NOT_ENROLLED_COURSE: {
+    message: 'User dont have course',
+    code: 'ERR_COURSE_004',
+  },
   // LESSON
   LESSON_NOT_FOUND: {
     message: `Lesson not found`,
