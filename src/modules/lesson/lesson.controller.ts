@@ -44,6 +44,15 @@ export class LessonController {
     return this.lessonService.getLessonOfCourse(+query.courseId, 'admin');
   }
 
+  @Get('/user/currentLesson/:courseId')
+  @UseGuards(UserAuthGuard)
+  async getCurrentLesson(
+    @Param('courseId') courseId: number,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.lessonService.getCurrentLesson(courseId, userId);
+  }
+
   @Get('/user/:lessonId')
   @UseGuards(UserAuthGuard)
   async userGetOneLesson(

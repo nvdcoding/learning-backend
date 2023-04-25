@@ -54,7 +54,6 @@ export class LessonService {
     let currentLesson = null;
     if (userId) {
       currentLesson = await this.courseService.isHaveCourse(courseId, userId);
-      console.log(currentLesson);
 
       if (currentLesson == null) {
         throw new HttpException(
@@ -172,5 +171,20 @@ export class LessonService {
       lesson.course.lessons[currentLessonIndex - 1] || null;
 
     return { nextLesson, previousLesson };
+  }
+
+  async getCurrentLesson(courseId: number, userId: number): Promise<Response> {
+    const currentLesson = await this.courseService.isHaveCourse(
+      courseId,
+      userId,
+    );
+
+    if (currentLesson == null) {
+      throw new HttpException(
+        httpErrors.USER_NOT_ENROLLED_COURSE,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    return { ...httpResponse.GET_SUCCES, data: currentLesson };
   }
 }
