@@ -32,21 +32,21 @@ export class UserAuthGuard extends AuthGuard('jwt') {
     if (token.length < 2 || token[0] != 'Bearer') {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
-
-    const userJwt = await this.jtwSv.verify(token[1]);
-    const user = await this.userService.getUserByIdAndEmail(
-      userJwt.id,
-      userJwt.email,
-    );
-    if (!user) {
+    try {
+      const userJwt = await this.jtwSv.verify(token[1]);
+      const user = await this.userService.getUserByIdAndEmail(
+        userJwt.id,
+        userJwt.email,
+      );
+      if (!user) {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.UNAUTHORIZED,
+        );
+      }
+      return userJwt;
+    } catch (error) {
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
-    }
-
-    const result = super.canActivate(context);
-    if (isObservable(result)) {
-      return firstValueFrom(result);
-    } else {
-      return result;
     }
   }
 }

@@ -1,8 +1,11 @@
 import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Lesson } from 'src/models/entities/lesson.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
+import { UserRepository } from 'src/models/repositories/user.repository';
 import { CourseStatus } from 'src/shares/enum/course.enum';
+import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
@@ -19,6 +22,7 @@ export class LessonService {
     private readonly courseRepository: CourseRepository,
     private readonly userCourseRepository: UserCourseRepository,
     private readonly courseService: CourseService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async getLessonOfCourse(courseId: number, role: string, userId?: number) {
@@ -47,21 +51,25 @@ export class LessonService {
         HttpStatus.NOT_FOUND,
       );
     }
+    let currentLesson = null;
     if (userId) {
-      if (!this.courseService.isHaveCourse(courseId, userId)) {
+      currentLesson = await this.courseService.isHaveCourse(courseId, userId);
+      console.log(currentLesson);
+
+      if (currentLesson == null) {
         throw new HttpException(
           httpErrors.USER_NOT_ENROLLED_COURSE,
           HttpStatus.BAD_REQUEST,
         );
       }
     }
-    const data = await this.lessonRepository.find({
+    const lessons = await this.lessonRepository.find({
       where: {
         course,
       },
       relations: ['exercises', 'course'],
     });
-    return { ...httpResponse.GET_SUCCES, data };
+    return { ...httpResponse.GET_SUCCES, data: { lessons, currentLesson } };
   }
 
   async getOneLesson(lessonId: number, userId?: number) {
@@ -78,17 +86,42 @@ export class LessonService {
         HttpStatus.NOT_FOUND,
       );
     }
-
+    let nextLessonId = null;
+    let previousLessonId = null;
+    let currentLesson = null;
     if (userId) {
-      if (!this.courseService.isHaveCourse(data.course.id, userId)) {
+      currentLesson = await this.courseService.isHaveCourse(
+        data.course.id,
+        userId,
+      );
+      const { previousLesson, nextLesson } =
+        await this.getPreviousAndNextLesson(data);
+      nextLessonId = nextLesson;
+      previousLessonId = previousLesson;
+      if (currentLesson === null) {
         throw new HttpException(
           httpErrors.USER_NOT_ENROLLED_COURSE,
           HttpStatus.BAD_REQUEST,
         );
       }
+      if (currentLesson < lessonId) {
+        throw new HttpException(
+          httpErrors.USER_NOT_ENROLLED_COURSE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+      if (data.exercises.length === 0) {
+        await this.userCourseRepository.update(
+          { id: userId },
+          { currentLesson: nextLesson.id },
+        );
+      }
     }
 
-    return { ...httpResponse.GET_SUCCES, data };
+    return {
+      ...httpResponse.GET_SUCCES,
+      data: { ...data, nextLessonId, previousLessonId },
+    };
   }
 
   async createLesson(body: CreateLessonDto): Promise<Response> {
@@ -128,5 +161,16 @@ export class LessonService {
       link: body.name,
     });
     return httpResponse.UPDATE_LESSON_SUCCES;
+  }
+
+  async getPreviousAndNextLesson(lesson: Lesson) {
+    const currentLessonIndex = lesson.course.lessons.findIndex(
+      (lesson) => lesson.id === lesson.id,
+    );
+    const nextLesson = lesson.course.lessons[currentLessonIndex + 1] || null;
+    const previousLesson =
+      lesson.course.lessons[currentLessonIndex - 1] || null;
+
+    return { nextLesson, previousLesson };
   }
 }

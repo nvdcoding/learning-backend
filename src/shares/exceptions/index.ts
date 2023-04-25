@@ -73,6 +73,10 @@ export const httpErrors = {
     message: `Course id not defined`,
     code: `ERR_LESSON_002`,
   },
+  LESSON_LOCKED: {
+    message: `Lesson id Locked`,
+    code: `ERR_LESSON_003`,
+  },
   // EXERCISE
   EXERCISE_NOT_FOUND: {
     message: `Exercise not found`,

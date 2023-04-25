@@ -101,9 +101,12 @@ export class CourseService {
         relations: ['userCourses'],
       }),
       this.courseRepository.findOne({
-        id: courseId,
-        type: Not(CourseType.INCOMMING),
-        status: CourseStatus.ACTIVE,
+        where: {
+          id: courseId,
+          type: Not(CourseType.INCOMMING),
+          status: CourseStatus.ACTIVE,
+        },
+        relations: ['lessons'],
       }),
     ]);
     if (!course) {
@@ -124,7 +127,7 @@ export class CourseService {
     const userCourse = new UserCourse();
     userCourse.user = user;
     userCourse.course = course;
-
+    userCourse.currentLesson = course.lessons[0].id;
     await Promise.all([
       this.userRepository.update(userId, { coinAvailable: `${available}` }),
       this.userCourseRepository.save(userCourse),
@@ -133,16 +136,19 @@ export class CourseService {
     return httpResponse.REGISTER_COURSE_SUCCES;
   }
 
-  async isHaveCourse(courseId: number, userId: number): Promise<boolean> {
+  async isHaveCourse(courseId: number, userId: number): Promise<number | null> {
     const userCourse = await this.userCourseRepository.findOne({
       where: {
         user: { id: userId },
         course: { id: courseId },
       },
     });
+
     if (!userCourse) {
-      return false;
+      return null;
     }
-    return true;
+    console.log(123123);
+
+    return userCourse.currentLesson;
   }
 }

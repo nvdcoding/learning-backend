@@ -8,11 +8,13 @@ import { UserModule } from '../user/user.module';
 import { ExcerciseController } from './excercise.controller';
 import { ExcerciseService } from './excercise.service';
 import { HttpModule } from '@nestjs/axios';
+import { LessonModule } from '../lesson/lesson.module';
 @Module({
   imports: [
     UserModule,
     AdminModule,
     CourseModule,
+    LessonModule,
     HttpModule,
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],

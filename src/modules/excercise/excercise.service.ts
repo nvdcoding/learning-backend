@@ -9,14 +9,24 @@ import { CreateExcerciseDto } from './dtos/create-excercise.dto';
 import { DoExerciseDto } from './dtos/do-exercise.dto';
 import { HttpService } from '@nestjs/axios';
 import axios from 'axios';
+import { C_BASIC } from 'src/shares/constant/course.constant';
+import { Response } from 'src/shares/response/response.interface';
+import { UserExerciseRepository } from 'src/models/repositories/user-exercise.repository';
+import { UserRepository } from 'src/models/repositories/user.repository';
+import { UserStatus } from 'src/shares/enum/user.enum';
+import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
+import { LessonService } from '../lesson/lesson.service';
 @Injectable()
 export class ExcerciseService {
   constructor(
     private readonly excerciseRepository: ExcerciseRepository,
     private readonly lessonRepository: LessonRepository,
+    private readonly userExerciseRepository: UserExerciseRepository,
     private readonly testcaseRepository: TestcaseRepository,
     private readonly courseService: CourseService,
-    private readonly httpService: HttpService,
+    private readonly userRepository: UserRepository,
+    private readonly userCourseRepository: UserCourseRepository,
+    private readonly lessonService: LessonService,
   ) {}
   async getExcercises(lessonId: number, userId?: number) {
     const lesson = await this.lessonRepository.findOne(lessonId, {
@@ -28,9 +38,13 @@ export class ExcerciseService {
         HttpStatus.NOT_FOUND,
       );
     }
-
+    let currentLesson;
     if (userId) {
-      if (!this.courseService.isHaveCourse(lesson.course.id, userId)) {
+      currentLesson = await this.courseService.isHaveCourse(
+        lesson.course.id,
+        userId,
+      );
+      if (currentLesson === null) {
         throw new HttpException(
           httpErrors.USER_NOT_ENROLLED_COURSE,
           HttpStatus.BAD_REQUEST,
@@ -54,8 +68,13 @@ export class ExcerciseService {
         HttpStatus.NOT_FOUND,
       );
     }
+    let currentLesson;
     if (userId) {
-      if (!this.courseService.isHaveCourse(exercise.lesson.course.id, userId)) {
+      currentLesson = await this.courseService.isHaveCourse(
+        exercise.lesson.course.id,
+        userId,
+      );
+      if (currentLesson === null) {
         throw new HttpException(
           httpErrors.USER_NOT_ENROLLED_COURSE,
           HttpStatus.BAD_REQUEST,
@@ -97,46 +116,126 @@ export class ExcerciseService {
     return httpResponse.CREATE_EXCERCISE_SUCCES;
   }
 
-  async doExercise(body: DoExerciseDto, userId: number): Promise<void> {
-    const exercise = await this.excerciseRepository.findOne({
-      where: {
-        id: body.exerciseId,
-      },
-      relations: ['testCases', 'lesson', 'lesson.course'],
-    });
+  async doExercise(body: DoExerciseDto, userId: number): Promise<Response> {
+    const [exercise, user] = await Promise.all([
+      this.excerciseRepository.findOne({
+        where: {
+          id: body.exerciseId,
+        },
+        relations: ['testCases', 'lesson', 'lesson.course'],
+      }),
+      this.userRepository.findOne({
+        where: {
+          id: userId,
+          verifyStatus: UserStatus.ACTIVE,
+        },
+      }),
+    ]);
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
     if (!exercise) {
       throw new HttpException(
         httpErrors.EXERCISE_NOT_FOUND,
         HttpStatus.NOT_FOUND,
       );
     }
-    if (!this.courseService.isHaveCourse(exercise.lesson.course.id, userId)) {
-      throw new HttpException(
-        httpErrors.USER_NOT_ENROLLED_COURSE,
-        HttpStatus.BAD_REQUEST,
+    let currentLesson;
+    if (userId) {
+      currentLesson = await this.courseService.isHaveCourse(
+        exercise.lesson.course.id,
+        userId,
       );
+      if (currentLesson === null) {
+        throw new HttpException(
+          httpErrors.USER_NOT_ENROLLED_COURSE,
+          HttpStatus.BAD_REQUEST,
+        );
+      }
     }
+    const userExercise = await this.userExerciseRepository.findOne({
+      where: { user, exercise },
+    });
+    // await this.userExerciseRepository.
+    const result = [];
     for (const testcase of exercise.testCases) {
       const program = {
-        script: 'console.log("DUY")',
-        language: 'nodejs',
+        script: body.answer,
+        language: exercise.lesson.course.language,
         versionIndex: '0',
         clientId: '4c17b16c1985acfd25d703de8861b2b4',
         clientSecret:
           'eb3eef86c421531a15c833f4a3a44d88234c8905724b12d005adee9651ca8f33',
+        stdin: testcase.input,
       };
+
       try {
-        const response: any = await axios.post(
+        const { data }: any = await axios.post(
           `https://api.jdoodle.com/v1/execute`,
           program,
         );
-        console.log(response.data);
-
-        return response.data.output;
+        result.push({
+          ...testcase,
+          status: data.output === testcase.output ? 1 : 0,
+          output: data.output,
+          expected: testcase.output,
+        });
       } catch (error) {
         console.error(error);
         throw new Error('Failed to execute code');
       }
     }
+    const check = result.filter((e) => e.status == 1);
+    let statusExercise = false;
+    if (check.length == exercise.testCases.length) {
+      statusExercise = true;
+    } else {
+      statusExercise = false;
+    }
+    if (userExercise) {
+      await this.userExerciseRepository.update(userExercise.id, {
+        answer: body.answer,
+        status: statusExercise,
+      });
+    } else {
+      await this.userExerciseRepository.insert({
+        exercise,
+        user,
+        answer: body.answer,
+        status: statusExercise,
+      });
+    }
+    if (exercise.lesson.id === currentLesson) {
+      const [exercises, completedExercises] = await Promise.all([
+        this.excerciseRepository.find({
+          where: {
+            lesson: {
+              id: exercise.lesson.id,
+            },
+          },
+        }),
+        this.userExerciseRepository.count({
+          where: {
+            user,
+            exercise: {
+              lesson: {
+                id: exercise.lesson.id,
+              },
+            },
+            status: true,
+          },
+        }),
+      ]);
+      if (exercises.length === completedExercises) {
+        const { nextLesson } =
+          await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
+        await this.userCourseRepository.update(
+          { id: userId },
+          { currentLesson: nextLesson.id },
+        );
+      }
+    }
+
+    return { ...httpResponse.ADMIN_LOGIN_SUCCESS, data: result };
   }
 }

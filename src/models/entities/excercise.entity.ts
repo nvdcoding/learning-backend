@@ -38,7 +38,7 @@ export class Exercise {
   userExercises: [];
 
   @OneToMany(() => TestCase, (testCase) => testCase.exercise, { cascade: true })
-  testCases: [];
+  testCases: TestCase[];
 
   @CreateDateColumn()
   createdAt: Date;
