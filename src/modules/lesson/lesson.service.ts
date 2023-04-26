@@ -76,7 +76,7 @@ export class LessonService {
       where: {
         id: lessonId,
       },
-      relations: ['exercises', 'course'],
+      relations: ['course', 'exercises'],
     });
     console.log(data);
     if (!data) {
