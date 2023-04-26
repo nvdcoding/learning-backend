@@ -170,7 +170,7 @@ export class LessonService {
 
   async getPreviousAndNextLesson(lesson: Lesson) {
     const currentLessonIndex = lesson.course.lessons.findIndex(
-      (lesson) => lesson.id === lesson.id,
+      (item) => item.id === lesson.id,
     );
     console.log(currentLessonIndex);
 
