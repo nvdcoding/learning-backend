@@ -131,6 +131,7 @@ export class ExcerciseService {
         },
       }),
     ]);
+    console.log({ exercise });
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
