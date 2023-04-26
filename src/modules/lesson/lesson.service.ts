@@ -72,12 +72,12 @@ export class LessonService {
   }
 
   async getOneLesson(lessonId: number, userId?: number) {
-    const data = await this.lessonRepository
-      .createQueryBuilder('lesson')
-      .leftJoinAndSelect('lesson.course', 'course')
-      .leftJoinAndSelect('lesson.exercises', 'exercises')
-      .where('lesson.id = :lessonId', { lessonId })
-      .getOne();
+    const data = await this.lessonRepository.findOne({
+      where: {
+        id: lessonId,
+      },
+      relations: ['exercises', 'course', 'course.lessons'],
+    });
     console.log(data);
     if (!data) {
       throw new HttpException(
@@ -163,8 +163,6 @@ export class LessonService {
   }
 
   async getPreviousAndNextLesson(lesson: Lesson) {
-    console.log(lesson);
-
     const currentLessonIndex = lesson.course.lessons.findIndex(
       (lesson) => lesson.id === lesson.id,
     );
