@@ -72,12 +72,12 @@ export class LessonService {
   }
 
   async getOneLesson(lessonId: number, userId?: number) {
-    const data = await this.lessonRepository.findOne(
-      {
+    const data = await this.lessonRepository.findOne({
+      where: {
         id: lessonId,
       },
-      { relations: ['exercises', 'course'] },
-    );
+      relations: ['exercises', 'course'],
+    });
     console.log(data);
     if (!data) {
       throw new HttpException(
