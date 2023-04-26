@@ -27,5 +27,5 @@ export enum CourseLevel {
 export enum CourseLanguage {
   C = 'c',
   JAVA = 'java',
-  JS = 'javascript',
+  JS = 'nodejs',
 }
