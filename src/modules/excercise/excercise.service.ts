@@ -220,7 +220,7 @@ export class ExcerciseService {
           .leftJoin('userExercise.exercise', 'exercise')
           .leftJoin('exercise.lesson', 'lesson')
           .select('COUNT(userExercise.id)', 'count')
-          .where('userExercise.user = :user', { user })
+          .where('userExercise.userId = :user', { user: userId })
           .andWhere('lesson.id = :lessonId', { lessonId: exercise.lesson.id })
           .andWhere('userExercise.status = :status', { status: true })
           .getRawOne(),
