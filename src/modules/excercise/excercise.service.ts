@@ -215,18 +215,18 @@ export class ExcerciseService {
             },
           },
         }),
-        this.userExerciseRepository.count({
-          where: {
-            user,
-            exercise: {
-              lesson: {
-                id: exercise.lesson.id,
-              },
-            },
-            status: true,
-          },
-        }),
+        this.userExerciseRepository
+          .createQueryBuilder('userExercise')
+          .leftJoin('userExercise.exercise', 'exercise')
+          .leftJoin('exercise.lesson', 'lesson')
+          .select('COUNT(userExercise.id)', 'count')
+          .where('userExercise.user = :user', { user })
+          .andWhere('lesson.id = :lessonId', { lessonId: exercise.lesson.id })
+          .andWhere('userExercise.status = :status', { status: true })
+          .getRawOne(),
       ]);
+      console.log(completedExercises);
+
       if (exercises.length === completedExercises) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
