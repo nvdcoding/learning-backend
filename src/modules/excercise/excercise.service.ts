@@ -30,7 +30,7 @@ export class ExcerciseService {
   ) {}
   async getExcercises(lessonId: number, userId?: number) {
     const lesson = await this.lessonRepository.findOne(lessonId, {
-      relations: ['exercises'],
+      relations: ['exercises', 'lesson', 'lesson.course'],
     });
     if (!lesson) {
       throw new HttpException(
