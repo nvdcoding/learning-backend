@@ -109,10 +109,9 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      console.log({ currentLesson });
       if (currentLesson < lessonId) {
         throw new HttpException(
-          httpErrors.USER_NOT_ENROLLED_COURSE,
+          httpErrors.LESSON_LOCKED,
           HttpStatus.BAD_REQUEST,
         );
       }
