@@ -31,7 +31,7 @@ export class Lesson {
   })
   link: string;
 
-  @ManyToOne(() => Course, (course) => course.lessons, { eager: true })
+  @ManyToOne(() => Course, (course) => course.lessons)
   @JoinColumn({ name: 'course_id' })
   course: Course;
 
