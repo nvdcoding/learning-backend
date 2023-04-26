@@ -172,6 +172,8 @@ export class LessonService {
     const currentLessonIndex = lesson.course.lessons.findIndex(
       (lesson) => lesson.id === lesson.id,
     );
+    console.log(currentLessonIndex);
+
     const nextLesson = lesson.course.lessons[currentLessonIndex + 1] || null;
     const previousLesson =
       lesson.course.lessons[currentLessonIndex - 1] || null;
