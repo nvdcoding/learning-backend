@@ -137,17 +137,27 @@ export class CourseService {
   }
 
   async isHaveCourse(courseId: number, userId: number): Promise<number | null> {
+    const [user, course] = await Promise.all([
+      this.userRepository.findOne({
+        where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+      }),
+      this.courseRepository.findOne({
+        where: {
+          id: courseId,
+          status: CourseStatus.ACTIVE,
+        },
+      }),
+    ]);
     const userCourse = await this.userCourseRepository.findOne({
       where: {
-        user: { id: userId },
-        course: { id: courseId },
+        user,
+        course,
       },
     });
 
     if (!userCourse) {
       return null;
     }
-    console.log(123123);
 
     return userCourse.currentLesson;
   }
