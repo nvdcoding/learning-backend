@@ -72,12 +72,12 @@ export class LessonService {
   }
 
   async getOneLesson(lessonId: number, userId?: number) {
-    const data = await this.lessonRepository.findOne({
-      where: {
-        id: lessonId,
-      },
-      relations: ['course', 'exercises'],
-    });
+    const data = await this.lessonRepository
+      .createQueryBuilder('lesson')
+      .leftJoinAndSelect('lesson.course', 'course')
+      .leftJoinAndSelect('lesson.exercises', 'exercises')
+      .where('lesson.id = :lessonId', { lessonId })
+      .getOne();
     console.log(data);
     if (!data) {
       throw new HttpException(
