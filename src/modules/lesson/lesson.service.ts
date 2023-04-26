@@ -163,6 +163,8 @@ export class LessonService {
   }
 
   async getPreviousAndNextLesson(lesson: Lesson) {
+    console.log(lesson);
+
     const currentLessonIndex = lesson.course.lessons.findIndex(
       (lesson) => lesson.id === lesson.id,
     );
