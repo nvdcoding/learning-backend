@@ -78,7 +78,7 @@ export class LessonService {
       },
       { relations: ['exercises', 'course'] },
     );
-
+    console.log(data);
     if (!data) {
       throw new HttpException(
         httpErrors.LESSON_NOT_FOUND,
