@@ -1,4 +1,10 @@
-import { Body, HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  Body,
+  HttpException,
+  HttpStatus,
+  Injectable,
+  Logger,
+} from '@nestjs/common';
 import { Lesson } from 'src/models/entities/lesson.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
@@ -103,6 +109,7 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
+      console.log({ currentLesson });
       if (currentLesson < lessonId) {
         throw new HttpException(
           httpErrors.USER_NOT_ENROLLED_COURSE,
