@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { UserOrGuest } from 'src/shares/decorators/user-or-guest.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
@@ -32,8 +33,11 @@ export class CourseController {
   }
 
   @Get('/:courseId')
-  async getOneCourse(@Param('courseId') courseId: number): Promise<Response> {
-    return this.courseService.getOneCourse(courseId);
+  async getOneCourse(
+    @Param('courseId') courseId: number,
+    @UserOrGuest() user: number | null,
+  ): Promise<Response> {
+    return this.courseService.getOneCourse(courseId, user);
   }
 
   @Post('/')

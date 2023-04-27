@@ -64,6 +64,10 @@ export const httpErrors = {
     message: 'User dont have course',
     code: 'ERR_COURSE_004',
   },
+  COURSE_ALREADY_ENROLLED: {
+    message: 'User already have course',
+    code: 'ERR_COURSE_005',
+  },
   // LESSON
   LESSON_NOT_FOUND: {
     message: `Lesson not found`,

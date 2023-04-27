@@ -25,7 +25,10 @@ export class CourseService {
     return { ...httpResponse.GET_SUCCES, data };
   }
 
-  async getOneCourse(courseId: number): Promise<Response> {
+  async getOneCourse(
+    courseId: number,
+    userId: number | any,
+  ): Promise<Response> {
     const data = await this.courseRepository.findOne(courseId, {
       relations: ['userCourses', 'lessons'],
     });
@@ -36,6 +39,36 @@ export class CourseService {
         HttpStatus.BAD_REQUEST,
       );
     }
+    let isRegisted: boolean;
+
+    if (userId !== null) {
+      const user = await this.userRepository.findOne({
+        where: {
+          id: userId,
+          verifyStatus: UserStatus.ACTIVE,
+        },
+      });
+      if (!user) {
+        throw new HttpException(
+          httpErrors.USER_NOT_FOUND,
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      const userCourse = await this.userCourseRepository.findOne({
+        where: {
+          user,
+          course: data,
+        },
+      });
+      if (!userCourse) {
+        isRegisted = false;
+      } else {
+        isRegisted = true;
+      }
+    } else {
+      isRegisted = false;
+    }
+
     const totalUsers = data.userCourses.length;
     const firstLesson = data.lessons.length
       ? {
@@ -49,7 +82,13 @@ export class CourseService {
     });
     delete data.lessons;
     delete data.userCourses;
-    const responseData = { ...data, totalUsers, firstLesson, lessonList };
+    const responseData = {
+      ...data,
+      totalUsers,
+      firstLesson,
+      lessonList,
+      isRegisted,
+    };
     return { ...httpResponse.GET_SUCCES, data: responseData };
   }
 
@@ -109,6 +148,18 @@ export class CourseService {
         relations: ['lessons'],
       }),
     ]);
+    const userCourseDb = await this.userCourseRepository.findOne({
+      where: {
+        user,
+        course,
+      },
+    });
+    if (userCourseDb) {
+      throw new HttpException(
+        httpErrors.COURSE_ALREADY_ENROLLED,
+        HttpStatus.BAD_REQUEST,
+      );
+    }
     if (!course) {
       throw new HttpException(
         httpErrors.COURSE_NOT_FOUND,
