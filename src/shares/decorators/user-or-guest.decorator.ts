@@ -13,6 +13,7 @@ export const UserOrGuest = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     try {
       const token = request.headers.authorization;
+      console.log(token);
       if (!token) {
         return null;
       }
