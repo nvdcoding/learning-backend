@@ -84,7 +84,6 @@ export class LessonService {
       },
       relations: ['exercises', 'course', 'course.lessons'],
     });
-    console.log(data);
     if (!data) {
       throw new HttpException(
         httpErrors.LESSON_NOT_FOUND,
@@ -172,7 +171,7 @@ export class LessonService {
     const currentLessonIndex = lesson.course.lessons.findIndex(
       (item) => item.id === lesson.id,
     );
-    console.log(currentLessonIndex);
+    console.log({ currentLessonIndex });
 
     const nextLesson = lesson.course.lessons[currentLessonIndex + 1] || null;
     const previousLesson =

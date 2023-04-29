@@ -122,7 +122,12 @@ export class ExcerciseService {
         where: {
           id: body.exerciseId,
         },
-        relations: ['testCases', 'lesson', 'lesson.course'],
+        relations: [
+          'testCases',
+          'lesson',
+          'lesson.course',
+          'lesson.course.lessons',
+        ],
       }),
       this.userRepository.findOne({
         where: {
@@ -214,7 +219,6 @@ export class ExcerciseService {
               id: exercise.lesson.id,
             },
           },
-          relations: ['lesson', 'lesson.course', 'lesson.course.lessons'],
         }),
         this.userExerciseRepository
           .createQueryBuilder('userExercise')
@@ -226,7 +230,6 @@ export class ExcerciseService {
           .andWhere('userExercise.status = :status', { status: true })
           .getRawOne(),
       ]);
-      console.log(exercises);
 
       if (+exercises.length === +completedExercises.count) {
         const { nextLesson } =
