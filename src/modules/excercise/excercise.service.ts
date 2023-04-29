@@ -230,6 +230,7 @@ export class ExcerciseService {
       if (+exercises.length === +completedExercises) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
+        console.log({ nextLesson });
         await this.userCourseRepository.update(
           { id: userId },
           { currentLesson: nextLesson ? nextLesson.id : exercise.lesson.id },
