@@ -225,9 +225,9 @@ export class ExcerciseService {
           .andWhere('userExercise.status = :status', { status: true })
           .getRawOne(),
       ]);
-      console.log({ completedExercises });
+      console.log(completedExercises);
       console.log({ data: exercises.length });
-      if (+exercises.length === +completedExercises) {
+      if (+exercises.length === +completedExercises.count) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
         console.log({ nextLesson });
