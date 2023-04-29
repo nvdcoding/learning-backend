@@ -214,6 +214,7 @@ export class ExcerciseService {
               id: exercise.lesson.id,
             },
           },
+          relations: ['lesson', 'lesson.course'],
         }),
         this.userExerciseRepository
           .createQueryBuilder('userExercise')
@@ -225,8 +226,8 @@ export class ExcerciseService {
           .andWhere('userExercise.status = :status', { status: true })
           .getRawOne(),
       ]);
-      console.log(completedExercises);
-      console.log({ data: exercises.length });
+      console.log(exercises);
+
       if (+exercises.length === +completedExercises.count) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
