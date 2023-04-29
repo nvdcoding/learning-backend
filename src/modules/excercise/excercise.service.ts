@@ -214,7 +214,7 @@ export class ExcerciseService {
               id: exercise.lesson.id,
             },
           },
-          relations: ['lesson', 'lesson.course'],
+          relations: ['lesson', 'lesson.course', 'lesson.course.lessons'],
         }),
         this.userExerciseRepository
           .createQueryBuilder('userExercise')
