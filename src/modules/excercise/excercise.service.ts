@@ -227,7 +227,7 @@ export class ExcerciseService {
       ]);
       console.log({ completedExercises });
       console.log({ data: exercises.length });
-      if (exercises.length === completedExercises) {
+      if (+exercises.length === +completedExercises) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
         await this.userCourseRepository.update(
