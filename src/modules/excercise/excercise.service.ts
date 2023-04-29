@@ -236,7 +236,7 @@ export class ExcerciseService {
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
         console.log({ nextLesson });
         await this.userCourseRepository.update(
-          { id: userId, course: exercise.lesson.course },
+          { user: user, course: exercise.lesson.course },
           { currentLesson: nextLesson ? nextLesson.id : exercise.lesson.id },
         );
       }
