@@ -117,7 +117,7 @@ export class LessonService {
       if (data.exercises.length === 0) {
         await this.userCourseRepository.update(
           { id: userId },
-          { currentLesson: nextLesson.id },
+          { currentLesson: nextLesson ? nextLesson.id : data.id },
         );
       }
     }
