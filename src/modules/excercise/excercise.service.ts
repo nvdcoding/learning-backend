@@ -225,14 +225,14 @@ export class ExcerciseService {
           .andWhere('userExercise.status = :status', { status: true })
           .getRawOne(),
       ]);
-      console.log(completedExercises);
-
+      console.log({ completedExercises });
+      console.log({ data: exercises.length });
       if (exercises.length === completedExercises) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
         await this.userCourseRepository.update(
           { id: userId },
-          { currentLesson: nextLesson.id },
+          { currentLesson: nextLesson ? nextLesson.id : exercise.lesson.id },
         );
       }
     }
