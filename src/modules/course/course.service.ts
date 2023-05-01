@@ -3,6 +3,7 @@ import { UserCourse } from 'src/models/entities/user-course.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { CourseType, CourseStatus } from 'src/shares/enum/course.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
@@ -211,5 +212,25 @@ export class CourseService {
     }
 
     return userCourse.currentLesson;
+  }
+
+  async getUserCourse(userId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        verifyStatus: UserStatus.ACTIVE,
+      },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const userCourse = await this.userCourseRepository.find({
+      where: {
+        user,
+      },
+      relations: ['course'],
+    });
+
+    return { ...httpResponse.GET_SUCCES, data: userCourse };
   }
 }

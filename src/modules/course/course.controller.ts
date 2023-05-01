@@ -32,6 +32,12 @@ export class CourseController {
     return this.courseService.getAllCourses();
   }
 
+  @Get('/user/current')
+  @UseGuards(UserAuthGuard)
+  async getUserCourse(@UserID() userId: number): Promise<Response> {
+    return this.courseService.getUserCourse(userId);
+  }
+
   @Get('/:courseId')
   async getOneCourse(
     @Param('courseId') courseId: number,
