@@ -39,12 +39,9 @@ export class LessonService {
       );
     }
     // check user cos course do khong
-    const where = {
-      id: courseId,
-    };
     const course = await this.courseRepository.findOne({
       where: {
-        ...where,
+        id: courseId,
         status:
           role === 'admin'
             ? In([CourseStatus.ACTIVE, CourseStatus.INACTIVE])
@@ -68,13 +65,48 @@ export class LessonService {
         );
       }
     }
+    const relations =
+      role === 'admin'
+        ? ['exercises', 'course']
+        : [
+            'exercises',
+            'course',
+            'exercises.userExercises',
+            'exercises.userExercises.user',
+          ];
+
     const lessons = await this.lessonRepository.find({
       where: {
         course,
       },
-      relations: ['exercises', 'course', 'exercises.userExercises'],
+      relations,
     });
-    return { ...httpResponse.GET_SUCCES, data: { lessons, currentLesson } };
+    const lessonData = lessons.map((lesson) => {
+      const exercises = lesson.exercises.map((exercise) => {
+        let userExerciseStatus = null;
+        if (userId) {
+          const userExercise = exercise.userExercises.find(
+            (ue: any) => ue.user.id === userId && ue.status === true,
+          );
+          userExerciseStatus = userExercise ? true : false;
+        }
+        return {
+          ...exercise,
+          status: userExerciseStatus,
+        };
+      });
+
+      return {
+        ...lesson,
+        exercises: exercises.map((e) => {
+          return { ...e, userExercises: null };
+        }),
+      };
+    });
+    return {
+      ...httpResponse.GET_SUCCES,
+      data: { lessons: lessonData, currentLesson },
+    };
   }
 
   async getOneLesson(lessonId: number, userId?: number) {
