@@ -72,7 +72,7 @@ export class LessonService {
       where: {
         course,
       },
-      relations: ['exercises', 'course'],
+      relations: ['exercises', 'course', 'exercises.userExercises'],
     });
     return { ...httpResponse.GET_SUCCES, data: { lessons, currentLesson } };
   }
