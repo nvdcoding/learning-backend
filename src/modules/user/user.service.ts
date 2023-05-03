@@ -13,6 +13,7 @@ import { TransactionStatus } from 'src/shares/enum/transaction.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { Response } from 'src/shares/response/response.interface';
+import { httpResponse } from 'src/shares/response';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getIP = promisify(require('external-ip')());
 @Injectable()
@@ -110,6 +111,6 @@ export class UserService {
       time: date,
       user,
     });
-    return { http, data: vnpUr };
+    return { ...httpResponse.CREATE_COURSE_SUCCESS, data: vnpUrl };
   }
 }

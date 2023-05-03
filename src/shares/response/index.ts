@@ -21,7 +21,10 @@ export const httpResponse = {
     message: 'Get success',
     code: 'GET success',
   },
-
+  GEN_LINK_SUCCESS: {
+    essage: 'Gen success',
+    code: 'Gen success',
+  },
   //COURSE: {}
   CREATE_COURSE_SUCCESS: {
     message: 'Course created!',
