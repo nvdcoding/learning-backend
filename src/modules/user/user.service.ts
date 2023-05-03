@@ -76,7 +76,7 @@ export class UserService {
     const orderId = moment(date).format('DDHHmmss');
     const amount = body.amount;
     const bankCode = 'NCB';
-    const orderInfo = `Thanh toan cho don hang ma: ${orderId}`;
+    const orderInfo = `${orderId}`;
     const locale = 'vn';
     const currCode = 'VND';
     let vnp_Params = {};
@@ -93,7 +93,7 @@ export class UserService {
     vnp_Params['vnp_IpAddr'] = ipAddr;
     vnp_Params['vnp_CreateDate'] = +createDate;
     // if (bankCode !== null && bankCode !== '') {
-    vnp_Params['vnp_BankCode'] = bankCode;
+    // vnp_Params['vnp_BankCode'] = bankCode;
     // vnp_Params['vnp_ExpireDate'] = expiredDate;
     // }
     vnp_Params = this.sortObject(vnp_Params);
