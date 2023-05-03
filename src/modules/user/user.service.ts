@@ -133,14 +133,14 @@ export class UserService {
       const orderId = query['vnp_TxnRef'];
       const rspCode = query['vnp_ResponseCode'];
       //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
+      const transaction = await this.transactionRepository.findOne({
+        where: { transactionCode: orderId },
+        relations: ['user'],
+      });
+      const user = await this.userRepository.findOne({
+        where: { id: transaction.user.id, verifyStatus: UserStatus.ACTIVE },
+      });
       if (rspCode == '00') {
-        const transaction = await this.transactionRepository.findOne({
-          where: { transactionCode: orderId },
-          relations: ['user'],
-        });
-        const user = await this.userRepository.findOne({
-          where: { id: transaction.user.id, verifyStatus: UserStatus.ACTIVE },
-        });
         await Promise.all([
           this.transactionRepository.update(
             { id: transaction.id },
@@ -151,13 +151,25 @@ export class UserService {
           this.userRepository.update(
             { id: transaction.user.id },
             {
-              coin: user.coin + +vnp_Amount,
-              coinAvailable: user.coinAvailable + +vnp_Amount,
+              coin: user.coin + +vnp_Amount / 100,
+              coinAvailable: user.coinAvailable + +vnp_Amount / 100,
             },
           ),
         ]);
+      } else {
+        await this.transactionRepository.update(
+          { id: transaction.id },
+          {
+            status: TransactionStatus.PROCESSED,
+          },
+        );
       }
     } else {
+      console.log({
+        hash: secureHash,
+        signed,
+      });
+
       console.log('Error');
     }
   }
