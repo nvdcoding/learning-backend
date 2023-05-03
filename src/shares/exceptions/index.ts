@@ -30,7 +30,11 @@ export const httpErrors = {
   },
   ADMIN_NOT_ACTIVE: {
     message: 'Account is not active',
-    code: 'ERR_USER_003',
+    code: 'ERR_ADMIN_002',
+  },
+  ADMIN_EXIST: {
+    message: 'Admin exits',
+    code: 'ERR_ADMIN_003',
   },
   // Email
   WAIT_TO_RESEND: {

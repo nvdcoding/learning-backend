@@ -1,5 +1,7 @@
-import { Body, Controller, Get, Post, Req } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { DepositDto } from './dtos/deposit.dto';
 import { UserService } from './user.service';
 
@@ -9,18 +11,14 @@ import { UserService } from './user.service';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  // @Get('/')
-  // async getAllCourses(): Promise<Response> {
-  //   return this.courseService.getAllCourses();
-  // }
-  @Post('/')
-  async deposit(@Body() body: DepositDto, @Req() req) {
-    return this.userService.deposit(body, req);
+  @Get('/')
+  async test() {
+    console.log(123123);
   }
 
-  // }
-  @Post('/test')
-  async test(@Req() req) {
-    return this.userService.test(req);
+  @Post('/')
+  @UseGuards(UserAuthGuard)
+  async genUrlPay(@Body() body: DepositDto, @UserID() userId: number) {
+    return this.userService.genUrlPay(body, userId);
   }
 }

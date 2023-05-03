@@ -1,12 +1,18 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { AdminModule } from '../admin/admin.module';
+import { CourseModule } from '../course/course.module';
 import { MailModule } from '../mail/mail.module';
-import { UserController } from './user.controller';
-import { UserService } from './user.service';
+import { UserModule } from '../user/user.module';
+import { PermissionController } from './permission.controller';
+import { PermissionService } from './permission.service';
 
 @Module({
   imports: [
+    AdminModule,
+    UserModule,
+    CourseModule,
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],
       useFactory: (configService: ConfigService) =>
@@ -19,8 +25,7 @@ import { UserService } from './user.service';
       inject: [ConfigService],
     }),
   ],
-  providers: [UserService],
-  controllers: [UserController],
-  exports: [UserService],
+  providers: [PermissionService],
+  controllers: [PermissionController],
 })
-export class UserModule {}
+export class PermissionModule {}

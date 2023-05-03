@@ -1,52 +1,32 @@
-import {
-  Entity,
-  Column,
-  PrimaryGeneratedColumn,
-  ManyToOne,
-  JoinColumn,
-} from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, OneToMany } from 'typeorm';
+import { Admin } from './admin.entity';
 
-@Entity()
+@Entity({ name: 'permissions' })
 export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  createCourse: boolean;
+  @Column({ nullable: false, name: 'level', type: 'int' })
+  level: number;
 
-  @Column()
-  editCourse: boolean;
+  @Column({ nullable: false, name: 'posts', type: 'boolean' })
+  post: boolean;
 
-  @Column()
-  deleteCourse: boolean;
+  @Column({ nullable: false, name: 'reports', type: 'boolean' })
+  report: boolean;
 
-  @Column()
-  deleteUser: boolean;
+  @Column({ nullable: false, name: 'users', type: 'boolean' })
+  user: boolean;
 
-  @Column()
-  inactiveUser: boolean;
+  @Column({ nullable: false, name: 'exercise', type: 'boolean' })
+  exercise: boolean;
 
-  @Column()
-  acceptPost: boolean;
+  @Column({ nullable: false, name: 'lesson', type: 'boolean' })
+  lesson: boolean;
 
-  @Column()
-  deletePost: boolean;
+  @Column({ nullable: false, name: 'course', type: 'boolean' })
+  course: boolean;
 
-  @Column()
-  createLesson: boolean;
-
-  @Column()
-  editLesson: boolean;
-
-  @Column()
-  deleteLesson: boolean;
-
-  @Column()
-  createExercise: boolean;
-
-  @Column()
-  editExercise: boolean;
-
-  @Column()
-  deleteExercise: boolean;
+  @OneToMany(() => Admin, (admin) => admin.permission)
+  admins: Admin[];
 }
