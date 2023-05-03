@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Query } from '@nestjs/common';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import * as moment from 'moment';
 import { DepositDto } from './dtos/deposit.dto';
@@ -112,5 +112,53 @@ export class UserService {
       user,
     });
     return { ...httpResponse.CREATE_COURSE_SUCCESS, data: vnpUrl };
+  }
+
+  async IPNUrl(query) {
+    const { vnp_Amount, vnp_ResponseCode, vnp_TransactionStatus, vnp_TxnRef } =
+      query;
+    const secureHash = query['vnp_SecureHash'];
+    console.log(query);
+
+    delete query['vnp_SecureHash'];
+    delete query['vnp_SecureHashType'];
+    query = this.sortObject(query);
+    const secretKey = `${vnPayConfig.HASH_SECRET}`;
+    const querystring = require('qs');
+    const signData = querystring.stringify(query, { encode: true });
+    const crypto = require('crypto');
+    const hmac = crypto.createHmac('sha512', secretKey);
+    const signed = hmac.update(Buffer.from(signData, 'utf-8')).digest('hex');
+    if (secureHash === signed) {
+      const orderId = query['vnp_TxnRef'];
+      const rspCode = query['vnp_ResponseCode'];
+      //Kiem tra du lieu co hop le khong, cap nhat trang thai don hang va gui ket qua cho VNPAY theo dinh dang duoi
+      if (rspCode == '00') {
+        const transaction = await this.transactionRepository.findOne({
+          where: { transactionCode: orderId },
+          relations: ['user'],
+        });
+        const user = await this.userRepository.findOne({
+          where: { id: transaction.user.id, verifyStatus: UserStatus.ACTIVE },
+        });
+        await Promise.all([
+          this.transactionRepository.update(
+            { id: transaction.id },
+            {
+              status: TransactionStatus.PROCESSED,
+            },
+          ),
+          this.userRepository.update(
+            { id: transaction.user.id },
+            {
+              coin: user.coin + +vnp_Amount,
+              coinAvailable: user.coinAvailable + +vnp_Amount,
+            },
+          ),
+        ]);
+      }
+    } else {
+      console.log('Error');
+    }
   }
 }
