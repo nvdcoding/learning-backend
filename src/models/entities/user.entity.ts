@@ -36,20 +36,20 @@ export class User extends BaseEntity {
   username: string;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'coin',
     unsigned: true,
   })
-  coin: string;
+  coin: number;
 
   @Column({
-    type: 'bigint',
+    type: 'int',
     default: 0,
     name: 'coin_available',
     unsigned: true,
   })
-  coinAvailable: string;
+  coinAvailable: number;
 
   @Column({
     nullable: false,

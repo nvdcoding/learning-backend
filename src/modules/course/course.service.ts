@@ -1,10 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UserCourse } from 'src/models/entities/user-course.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
+import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { CourseType, CourseStatus } from 'src/shares/enum/course.enum';
+import {
+  TransactionStatus,
+  TransactionType,
+} from 'src/shares/enum/transaction.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
@@ -19,6 +24,7 @@ export class CourseService {
     private readonly courseRepository: CourseRepository,
     private readonly userRepository: UserRepository,
     private readonly userCourseRepository: UserCourseRepository,
+    private readonly transactionRepository: TransactionRepository,
   ) {}
 
   async getAllCourses() {
@@ -175,14 +181,23 @@ export class CourseService {
       );
     }
 
-    const available = +user.coinAvailable - course.price;
+    const available = +user.coinAvailable - +course.price;
+    const coin = +user.coin - +user.coin;
     const userCourse = new UserCourse();
     userCourse.user = user;
     userCourse.course = course;
     userCourse.currentLesson = course.lessons[0].id;
     await Promise.all([
-      this.userRepository.update(userId, { coinAvailable: `${available}` }),
+      this.userRepository.update(userId, { coinAvailable: available, coin }),
       this.userCourseRepository.save(userCourse),
+      this.transactionRepository.insert({
+        type: TransactionType.BUY_COURSE,
+        amount: course.price,
+        transactionCode: null,
+        time: Date.now(),
+        user,
+        status: TransactionStatus.PROCESSED,
+      }),
     ]);
 
     return httpResponse.REGISTER_COURSE_SUCCES;

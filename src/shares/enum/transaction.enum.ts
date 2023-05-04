@@ -7,3 +7,8 @@ export enum TransactionStatus {
   PROCESSED = '1',
   REJECTED = '2',
 }
+
+export enum TransactionType {
+  DEPOSIT = 'DEPOSIT',
+  BUY_COURSE = 'BUY_COURSE',
+}

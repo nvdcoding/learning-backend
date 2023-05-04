@@ -1,4 +1,8 @@
-import { TransactionStatus, Wallet } from 'src/shares/enum/transaction.enum';
+import {
+  TransactionStatus,
+  TransactionType,
+  Wallet,
+} from 'src/shares/enum/transaction.enum';
 import {
   Entity,
   Column,
@@ -16,7 +20,7 @@ export class Transaction {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ name: 'transaction_code', type: 'varchar', nullable: true })
   transactionCode: string;
 
   @Column({
@@ -27,6 +31,14 @@ export class Transaction {
     default: Wallet.VNPAY,
   })
   wallet: string;
+
+  @Column({
+    type: 'enum',
+    enum: TransactionType,
+    name: 'type',
+    nullable: false,
+  })
+  type: TransactionType;
 
   @ManyToOne(() => User, (user) => user.transactions)
   @JoinColumn({ name: 'user_id' })

@@ -25,7 +25,13 @@ export class UserController {
     return this.userService.IPNUrl(query);
   }
 
-  @Post('/')
+  @Get('/me')
+  @UseGuards(UserAuthGuard)
+  async getMe(@UserID() userId: number): Promise<Response> {
+    return this.userService.getMe(userId);
+  }
+
+  @Post('/deposit')
   @UseGuards(UserAuthGuard)
   async genUrlPay(
     @Body() body: DepositDto,

@@ -9,7 +9,10 @@ import * as crypto from 'crypto';
 import * as VNPay from 'node-vnpay';
 import { promisify } from 'util';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
-import { TransactionStatus } from 'src/shares/enum/transaction.enum';
+import {
+  TransactionStatus,
+  TransactionType,
+} from 'src/shares/enum/transaction.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { Response } from 'src/shares/response/response.interface';
@@ -110,6 +113,7 @@ export class UserService {
       transactionCode: orderId,
       time: date,
       user,
+      type: TransactionType.DEPOSIT,
     });
     return { ...httpResponse.CREATE_COURSE_SUCCESS, data: vnpUrl };
   }
@@ -172,5 +176,19 @@ export class UserService {
 
       console.log('Error');
     }
+  }
+
+  async getMe(userId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        verifyStatus: UserStatus.ACTIVE,
+      },
+      relations: ['posts', 'transactions'],
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    return { ...httpResponse.GET_SUCCES, data: user };
   }
 }
