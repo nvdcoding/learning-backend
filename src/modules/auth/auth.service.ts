@@ -188,6 +188,7 @@ export class AuthService {
       id: userExisted.id,
       email,
       verifyStatus: userExisted.verifyStatus,
+      isSetup: userExisted.isSetup,
     } as IJwtPayload;
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });

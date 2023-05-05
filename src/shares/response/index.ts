@@ -22,7 +22,7 @@ export const httpResponse = {
     code: 'GET success',
   },
   GEN_LINK_SUCCESS: {
-    essage: 'Gen success',
+    message: 'Gen success',
     code: 'Gen success',
   },
   //COURSE: {}

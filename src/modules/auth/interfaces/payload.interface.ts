@@ -6,6 +6,7 @@ export interface IJwtPayload {
   // username: string;
   email: string;
   verifyStatus: UserStatus;
+  isSetup: boolean;
 }
 
 export interface IJwtAdminPayload {

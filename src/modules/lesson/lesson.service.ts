@@ -194,7 +194,7 @@ export class LessonService {
     }
     await this.lessonRepository.update(body.lessonId, {
       name: body.name,
-      link: body.name,
+      link: body.link,
     });
     return httpResponse.UPDATE_LESSON_SUCCES;
   }

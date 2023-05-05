@@ -4,9 +4,6 @@ import { UserRepository } from 'src/models/repositories/user.repository';
 import * as moment from 'moment';
 import { DepositDto } from './dtos/deposit.dto';
 import { vnPayConfig } from 'src/configs/vnpay.config';
-import * as queryString from 'qs';
-import * as crypto from 'crypto';
-import * as VNPay from 'node-vnpay';
 import { promisify } from 'util';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import {
@@ -115,7 +112,7 @@ export class UserService {
       user,
       type: TransactionType.DEPOSIT,
     });
-    return { ...httpResponse.CREATE_COURSE_SUCCESS, data: vnpUrl };
+    return { ...httpResponse.GEN_LINK_SUCCESS, data: vnpUrl };
   }
 
   async IPNUrl(query) {
