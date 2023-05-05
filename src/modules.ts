@@ -15,6 +15,7 @@ import { ExcerciseModule } from './modules/excercise/excercise.module';
 import { LessonModule } from './modules/lesson/lesson.module';
 import { MailModule } from './modules/mail/mail.module';
 import { PermissionModule } from './modules/permission/permission.module';
+import { PostModule } from './modules/post/post.module';
 import { UserModule } from './modules/user/user.module';
 const Modules = [
   Logger,
@@ -38,5 +39,6 @@ const Modules = [
   LessonModule,
   ExcerciseModule,
   PermissionModule,
+  PostModule,
 ];
 export default Modules;
