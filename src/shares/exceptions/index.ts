@@ -99,4 +99,9 @@ export const httpErrors = {
     message: `Post not found`,
     code: `ERR_POST_002`,
   },
+  // INVALID
+  INVALID_PARAMS: {
+    message: 'Invalid params',
+    code: 'INVALID_PARAM',
+  },
 };
