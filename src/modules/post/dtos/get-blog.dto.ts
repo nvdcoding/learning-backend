@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum, IsNotEmpty, IsOptional } from 'class-validator';
 import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
-import { PostStatus } from 'src/shares/enum/post.enum';
+import { Topics } from 'src/shares/enum/post.enum';
 
-export class AdminGetBlogDto extends BasePaginationRequestDto {
+export class GetBlogDto extends BasePaginationRequestDto {
   @ApiProperty()
-  @IsEnum(PostStatus)
+  @IsEnum(Topics)
   @IsOptional()
-  status: PostStatus;
+  topic: Topics;
 }

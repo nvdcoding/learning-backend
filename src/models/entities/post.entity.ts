@@ -28,7 +28,10 @@ export class Post extends BaseEntity {
   title: string;
 
   @Column({ nullable: false, name: 'content', type: 'longtext' })
-  content: string;
+  currentContent: string;
+
+  @Column({ nullable: false, name: 'old-content', type: 'longtext' })
+  updateContent: string;
 
   @ManyToOne(() => User, (user) => user.posts)
   @JoinColumn({ name: 'author_id' })

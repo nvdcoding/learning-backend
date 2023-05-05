@@ -10,6 +10,11 @@ export enum Topics {
 export enum PostStatus {
   PENDING = 'PENDING',
   ACTIVE = 'ACTIVE',
-  INACTIVE = 'INACTIVE',
+  WAITING = 'WAITING',
   REJECTED = 'REJECTED',
+}
+
+export enum AdminAction {
+  ACCEPT = 'ACCEPT',
+  REJECT = 'REJECT',
 }

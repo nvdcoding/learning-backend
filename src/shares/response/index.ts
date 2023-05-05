@@ -77,4 +77,8 @@ export const httpResponse = {
     message: 'Post Updated',
     code: 'POST_004',
   },
+  DELETE_POST_SUCCESS: {
+    message: 'Post Deleted',
+    code: 'POST_005',
+  },
 };
