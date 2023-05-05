@@ -32,6 +32,7 @@ const commonRepositories = [
   UserLessonRepository,
   UserExerciseRepository,
   UserRepository,
+  PostRepository,
 ];
 
 @Global()

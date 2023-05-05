@@ -27,7 +27,7 @@ export class Post extends BaseEntity {
   @Column({ nullable: false, name: 'title' })
   title: string;
 
-  @Column({ nullable: false, name: 'content', type: 'text' })
+  @Column({ nullable: false, name: 'content', type: 'longtext' })
   content: string;
 
   @ManyToOne(() => User, (user) => user.posts)
@@ -49,7 +49,7 @@ export class Post extends BaseEntity {
 
   @Column({
     nullable: false,
-    name: 'topics',
+    name: 'topic',
     type: 'enum',
     enum: Topics,
   })

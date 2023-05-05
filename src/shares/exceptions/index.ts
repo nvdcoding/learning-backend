@@ -90,4 +90,13 @@ export const httpErrors = {
     message: `Exercise not found`,
     code: `ERR_EXERCISE_001`,
   },
+  //POST
+  POST_EXISTED: {
+    message: `Post existed`,
+    code: `ERR_POST_001`,
+  },
+  POST_NOT_FOUND: {
+    message: `Post not found`,
+    code: `ERR_POST_002`,
+  },
 };

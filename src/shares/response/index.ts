@@ -60,4 +60,21 @@ export const httpResponse = {
     message: 'Excercise updated',
     code: 'EXCERCISE_002',
   },
+  // POST
+  CREATE_POST_SUCCESS: {
+    message: 'Post created',
+    code: 'POST_001',
+  },
+  APPROVE_POST_SUCCESS: {
+    message: 'Approve success',
+    code: 'POST_002',
+  },
+  REQUEST_UPDATE_POST_SUCCESS: {
+    message: 'Request update success',
+    code: 'POST_003',
+  },
+  UPDATE_POST_SUCCESS: {
+    message: 'Post Updated',
+    code: 'POST_004',
+  },
 };
