@@ -99,6 +99,7 @@ export class PostService {
       status: PostStatus.PENDING,
       topic,
       updateContent: null,
+      author: user,
     });
     return { ...httpResponse.CREATE_POST_SUCCESS };
   }
