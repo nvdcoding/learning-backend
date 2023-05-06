@@ -33,6 +33,7 @@ export class PostService {
       order: {
         id: 'DESC',
       },
+      relations: ['author'],
     });
     return {
       ...httpResponse.GET_SUCCES,
@@ -144,6 +145,7 @@ export class PostService {
       order: {
         id: 'DESC',
       },
+      relations: ['author'],
     });
     return {
       ...httpResponse.GET_SUCCES,
