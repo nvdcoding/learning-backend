@@ -171,7 +171,7 @@ export class PostService {
     if (!post) {
       throw new HttpException(httpErrors.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-
+    await this.postRepository.update({ id: postId }, { status });
     return httpResponse.APPROVE_POST_SUCCESS;
   }
 
