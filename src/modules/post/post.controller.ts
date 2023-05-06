@@ -65,7 +65,7 @@ export class PostController {
   }
 
   @Get('/admin')
-  @UseGuards(UserAuthGuard)
+  @UseGuards(AdminModAuthGuard)
   async adminGetPost(@Query() options: AdminGetBlogDto): Promise<Response> {
     return this.postService.adminGetPostByStatus(options);
   }
