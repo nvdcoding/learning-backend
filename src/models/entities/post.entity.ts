@@ -30,7 +30,7 @@ export class Post extends BaseEntity {
   @Column({ nullable: false, name: 'content', type: 'longtext' })
   currentContent: string;
 
-  @Column({ nullable: false, name: 'old-content', type: 'longtext' })
+  @Column({ nullable: true, name: 'old-content', type: 'longtext' })
   updateContent: string;
 
   @ManyToOne(() => User, (user) => user.posts)
