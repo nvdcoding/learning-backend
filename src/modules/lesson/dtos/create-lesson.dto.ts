@@ -13,7 +13,7 @@ export class CreateLessonDto {
   name: string;
 
   @ApiProperty()
-  @IsUrl()
+  @IsString()
   @IsNotEmpty()
   link: string;
 }

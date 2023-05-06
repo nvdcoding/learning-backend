@@ -26,7 +26,7 @@ export class CreateBlogDto {
   topic: Topics;
 
   @ApiProperty()
-  @IsUrl()
+  @IsString()
   @IsOptional()
   image: string;
 }

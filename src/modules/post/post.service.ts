@@ -8,7 +8,7 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { In, IsNull, Not } from 'typeorm';
+import { In, IsNull, Like, Not } from 'typeorm';
 import { AdminGetBlogDto } from './dtos/admin-get-blog.dto';
 import { CreateBlogDto } from './dtos/create-blog.dto';
 import { GetBlogDto } from './dtos/get-blog.dto';
@@ -23,11 +23,12 @@ export class PostService {
   ) {}
 
   async getPost(options: GetBlogDto): Promise<Response> {
-    const { limit, page, topic } = options;
+    const { limit, page, topic, keyword } = options;
     const posts = await this.postRepository.findAndCount({
       where: {
         topic: topic ? topic : Not(IsNull()),
         status: In([PostStatus.ACTIVE, PostStatus.WAITING]),
+        title: keyword ? Like(`%${keyword}%`) : Not(IsNull()),
       },
       order: {
         id: 'DESC',
