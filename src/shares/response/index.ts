@@ -81,4 +81,9 @@ export const httpResponse = {
     message: 'Post Deleted',
     code: 'POST_005',
   },
+  //USER
+  UPDATE_USER_PREFER_SUCCESS: {
+    message: 'Updated',
+    code: 'USER_001',
+  },
 };

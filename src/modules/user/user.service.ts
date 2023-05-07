@@ -14,6 +14,9 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { Response } from 'src/shares/response/response.interface';
 import { httpResponse } from 'src/shares/response';
+import { UserPreferDto } from './dtos/update-user-setting.dto';
+import { UserPreferRepository } from 'src/models/repositories/user-prefer.repository';
+import { UserPrefer } from 'src/models/entities/user-prefer.entity';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getIP = promisify(require('external-ip')());
 @Injectable()
@@ -21,6 +24,7 @@ export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly transactionRepository: TransactionRepository,
+    private readonly userPreferRepository: UserPreferRepository,
   ) {}
 
   // async getAllCourses() {
@@ -189,5 +193,35 @@ export class UserService {
     return { ...httpResponse.GET_SUCCES, data: user };
   }
 
-  // async updateUser(): Promise<Response> {}
+  async updateUserPrefer(
+    body: UserPreferDto,
+    userId: number,
+  ): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: {
+        id: userId,
+        verifyStatus: UserStatus.ACTIVE,
+      },
+      relations: ['userPrefer'],
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    console.log(user.userPrefer);
+
+    if (user.userPrefer === null) {
+      const userPrefer = await this.userPreferRepository.save({ ...body });
+      await this.userRepository.update(
+        { id: userId },
+        { userPrefer, isSetup: true },
+      );
+    } else {
+      await this.userPreferRepository.update(
+        { id: user.userPrefer.id },
+        { ...body },
+      );
+    }
+
+    return httpResponse.UPDATE_COURSE_SUCCESS;
+  }
 }

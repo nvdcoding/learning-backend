@@ -14,6 +14,7 @@ import { TransactionRepository } from './repositories/transaction.repository';
 import { UserCourseRepository } from './repositories/user-course.repository';
 import { UserExerciseRepository } from './repositories/user-exercise.repository';
 import { UserLessonRepository } from './repositories/user-lesson.repository';
+import { UserPreferRepository } from './repositories/user-prefer.repository';
 import { UserRepository } from './repositories/user.repository';
 
 const commonRepositories = [
@@ -33,6 +34,7 @@ const commonRepositories = [
   UserExerciseRepository,
   UserRepository,
   PostRepository,
+  UserPreferRepository,
 ];
 
 @Global()

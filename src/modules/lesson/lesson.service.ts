@@ -124,7 +124,7 @@ export class LessonService {
     }
     let nextLessonId = null;
     let previousLessonId = null;
-    let currentLesson = null;
+    // let currentLesson = null;
     if (userId) {
       const res = await this.courseService.isHaveCourse(data.course.id, userId);
       const { previousLesson, nextLesson } =

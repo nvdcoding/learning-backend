@@ -7,6 +7,7 @@ import {
   Entity,
   Index,
   JoinColumn,
+  ManyToOne,
   OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
@@ -19,6 +20,7 @@ import { Comment } from './comment.entity';
 import { UserLesson } from './user-lesson.entity';
 import { UserExercise } from './user-excercise.entity';
 import { UserCourse } from './user-course.entity';
+import { UserPrefer } from './user-prefer.entity';
 @Entity({ name: 'users' })
 export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
@@ -94,6 +96,10 @@ export class User extends BaseEntity {
 
   @OneToMany(() => UserCourse, (UserCourse) => UserCourse.user)
   userCourses: UserCourse[];
+
+  @OneToOne(() => UserPrefer)
+  @JoinColumn()
+  userPrefer: UserPrefer;
 
   @CreateDateColumn({ name: 'created_at' })
   createdAt: Date;

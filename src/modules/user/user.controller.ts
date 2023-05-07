@@ -3,8 +3,8 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
@@ -12,6 +12,7 @@ import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { Response } from 'src/shares/response/response.interface';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { DepositDto } from './dtos/deposit.dto';
+import { UserPreferDto } from './dtos/update-user-setting.dto';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -29,6 +30,15 @@ export class UserController {
   @UseGuards(UserAuthGuard)
   async getMe(@UserID() userId: number): Promise<Response> {
     return this.userService.getMe(userId);
+  }
+
+  @Put('/prefer')
+  @UseGuards(UserAuthGuard)
+  async updateUserPrefer(
+    @Body() body: UserPreferDto,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.userService.updateUserPrefer(body, userId);
   }
 
   @Post('/deposit')
