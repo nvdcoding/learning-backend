@@ -203,7 +203,7 @@ export class CourseService {
     return httpResponse.REGISTER_COURSE_SUCCES;
   }
 
-  async isHaveCourse(courseId: number, userId: number): Promise<number | null> {
+  async isHaveCourse(courseId: number, userId: number): Promise<UserCourse> {
     const [user, course] = await Promise.all([
       this.userRepository.findOne({
         where: { id: userId, verifyStatus: UserStatus.ACTIVE },
@@ -226,7 +226,7 @@ export class CourseService {
       return null;
     }
 
-    return userCourse.currentLesson;
+    return userCourse;
   }
 
   async getUserCourse(userId: number): Promise<Response> {

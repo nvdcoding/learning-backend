@@ -126,21 +126,18 @@ export class LessonService {
     let previousLessonId = null;
     let currentLesson = null;
     if (userId) {
-      currentLesson = await this.courseService.isHaveCourse(
-        data.course.id,
-        userId,
-      );
+      const res = await this.courseService.isHaveCourse(data.course.id, userId);
       const { previousLesson, nextLesson } =
         await this.getPreviousAndNextLesson(data);
       nextLessonId = nextLesson;
       previousLessonId = previousLesson;
-      if (currentLesson === null) {
+      if (res.currentLesson === null) {
         throw new HttpException(
           httpErrors.USER_NOT_ENROLLED_COURSE,
           HttpStatus.BAD_REQUEST,
         );
       }
-      if (currentLesson < lessonId) {
+      if (res.currentLesson < lessonId) {
         throw new HttpException(
           httpErrors.LESSON_LOCKED,
           HttpStatus.BAD_REQUEST,
@@ -150,7 +147,7 @@ export class LessonService {
 
       if (data.exercises.length === 0) {
         await this.userCourseRepository.update(
-          { id: userId },
+          { id: res.id },
           { currentLesson: nextLesson ? nextLesson.id : data.id },
         );
       }
