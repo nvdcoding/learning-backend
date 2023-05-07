@@ -211,7 +211,8 @@ export class ExcerciseService {
         status: statusExercise,
       });
     }
-    if (exercise.lesson.id === currentLesson) {
+    console.log(currentLesson);
+    if (exercise.lesson.id === currentLesson.currentLesson) {
       const [exercises, completedExercises] = await Promise.all([
         this.excerciseRepository.find({
           where: {
