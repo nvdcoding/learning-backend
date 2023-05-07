@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
@@ -30,6 +31,15 @@ export class PostController {
   @Get('/user/:id')
   async getOnePost(@Param('id') id: number): Promise<Response> {
     return this.postService.getOnePost(id);
+  }
+
+  @Get('/get-user-post')
+  @UseGuards(UserAuthGuard)
+  async getUserPost(
+    @Query() options: BasePaginationRequestDto,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.postService.userGetMyPost(options, userId);
   }
 
   @Get('/user')

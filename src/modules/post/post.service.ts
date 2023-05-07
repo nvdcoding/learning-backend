@@ -2,7 +2,10 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PermissionRepository } from 'src/models/repositories/permission.repository';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
-import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import {
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shares/dtos/base-pagination.dto';
 import { AdminAction, PostStatus } from 'src/shares/enum/post.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
@@ -21,6 +24,36 @@ export class PostService {
     private readonly postRepository: PostRepository,
     private readonly userRepository: UserRepository,
   ) {}
+
+  async userGetMyPost(
+    options: BasePaginationRequestDto,
+    userId: number,
+  ): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const posts = await this.postRepository.findAndCount({
+      where: {
+        status: In([PostStatus.ACTIVE, PostStatus.WAITING]),
+        author: user,
+      },
+      relations: ['author', 'comments'],
+      take: options.limit,
+      skip: (options.page - 1) * options.limit,
+    });
+
+    return {
+      ...httpResponse.GET_SUCCES,
+      data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        posts,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
 
   async getPost(options: GetBlogDto): Promise<Response> {
     const { limit, page, topic, keyword } = options;
