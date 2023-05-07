@@ -35,6 +35,13 @@ export class User extends BaseEntity {
   @Column({ nullable: false, name: 'username' })
   username: string;
 
+  @Index()
+  @Column({ nullable: true, name: 'name', type: 'varchar' })
+  name: string;
+
+  @Column({ nullable: true, name: 'avatar', type: 'varchar' })
+  avatar: string;
+
   @Column({
     type: 'int',
     default: 0,

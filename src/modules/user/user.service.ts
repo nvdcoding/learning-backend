@@ -188,4 +188,6 @@ export class UserService {
     }
     return { ...httpResponse.GET_SUCCES, data: user };
   }
+
+  async updateUser(): Promise<Response> {}
 }
