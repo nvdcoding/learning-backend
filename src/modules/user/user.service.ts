@@ -185,7 +185,7 @@ export class UserService {
         id: userId,
         verifyStatus: UserStatus.ACTIVE,
       },
-      relations: ['posts', 'transactions'],
+      relations: ['posts', 'transactions', 'userPrefer'],
     });
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
