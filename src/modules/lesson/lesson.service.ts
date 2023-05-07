@@ -146,7 +146,7 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      console.log(data.exercises);
+      console.log('DSADASD', { ckec: data.exercises });
 
       if (data.exercises.length === 0) {
         await this.userCourseRepository.update(
