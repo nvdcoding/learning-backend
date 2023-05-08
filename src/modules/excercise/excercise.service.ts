@@ -201,7 +201,7 @@ export class ExcerciseService {
     if (userExercise) {
       await this.userExerciseRepository.update(userExercise.id, {
         answer: body.answer,
-        status: statusExercise,
+        status: userExercise.status === true ? true : statusExercise,
       });
     } else {
       await this.userExerciseRepository.insert({
@@ -211,7 +211,6 @@ export class ExcerciseService {
         status: statusExercise,
       });
     }
-    console.log(currentLesson);
     if (exercise.lesson.id === currentLesson.currentLesson) {
       const [exercises, completedExercises] = await Promise.all([
         this.excerciseRepository.find({
