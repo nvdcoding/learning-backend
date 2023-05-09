@@ -7,6 +7,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   DeleteDateColumn,
+  OneToMany,
 } from 'typeorm';
 import { Lesson } from './lesson.entity';
 import { Post } from './post.entity';
@@ -21,12 +22,6 @@ export class Comment {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({
-    name: 'parrent_comment',
-    type: 'int',
-  })
-  parrentComment: number;
-
   @ManyToOne(() => Post, (post) => post.comments)
   @JoinColumn({ name: 'post_id' })
   post: Post;
@@ -37,6 +32,13 @@ export class Comment {
 
   @Column({ name: 'content', type: 'text' })
   content: string;
+
+  @ManyToOne(() => Comment, (comment) => comment.subcomments)
+  @JoinColumn({ name: 'parrent_comment' })
+  parrentComment: Comment;
+
+  @OneToMany(() => Comment, (comment) => comment.parrentComment)
+  subcomments: Comment[];
 
   @CreateDateColumn()
   createdAt: Date;

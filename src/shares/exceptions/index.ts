@@ -104,4 +104,9 @@ export const httpErrors = {
     message: 'Invalid params',
     code: 'INVALID_PARAM',
   },
+  // COMMENT
+  COMMENT_NOT_FOUND: {
+    message: 'Comment not found',
+    code: 'ERR_COMMENT_001',
+  },
 };

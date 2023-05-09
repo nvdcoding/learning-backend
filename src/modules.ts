@@ -10,6 +10,7 @@ import { DatabaseCommonModule } from 'src/models/database-common';
 import { redisConfig } from './configs/redis.config';
 import { AdminModule } from './modules/admin/admin.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { CommentModule } from './modules/comment/comment.module';
 import { CourseModule } from './modules/course/course.module';
 import { ExcerciseModule } from './modules/excercise/excercise.module';
 import { LessonModule } from './modules/lesson/lesson.module';
@@ -40,5 +41,6 @@ const Modules = [
   ExcerciseModule,
   PermissionModule,
   PostModule,
+  CommentModule,
 ];
 export default Modules;

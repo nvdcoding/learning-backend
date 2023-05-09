@@ -86,4 +86,21 @@ export const httpResponse = {
     message: 'Updated',
     code: 'USER_001',
   },
+  //COMMENT:
+  CREATE_COMMENT_SUCCESS: {
+    message: 'Created comment',
+    code: 'COMMENT_001',
+  },
+  UPDATE_COMMENT_SUCCESS: {
+    message: 'Updated comment',
+    code: 'COMMENT_002',
+  },
+  GET_COMMENT_SUCCESS: {
+    message: 'get comment',
+    code: 'COMMENT_003',
+  },
+  DELETE_COMMENT_SUCCESS: {
+    message: 'DELETE comment',
+    code: 'COMMENT_004',
+  },
 };
