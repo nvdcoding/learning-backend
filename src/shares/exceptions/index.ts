@@ -36,6 +36,10 @@ export const httpErrors = {
     message: 'Admin exits',
     code: 'ERR_ADMIN_003',
   },
+  ADMIN_NOT_FOUND: {
+    message: 'Quản trị viên không tồn tại',
+    code: 'ERR_ADMIN_005',
+  },
   // Email
   WAIT_TO_RESEND: {
     message: `Please wait for ${emailConfig.registerTTL} seconds to resend`,

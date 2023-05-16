@@ -1,4 +1,4 @@
-import { AdminStatus, Role } from 'src/shares/enum/admin.enum';
+import { AdminRole, AdminStatus, Role } from 'src/shares/enum/admin.enum';
 import {
   Entity,
   Column,
@@ -29,12 +29,18 @@ export class Admin {
 
   @Column({
     type: 'enum',
-    enum: Role,
-    default: Role.MOD,
+    enum: AdminRole,
+    default: AdminRole.MOD,
     name: 'role',
     nullable: false,
   })
-  role: Role;
+  role: AdminRole;
+
+  @Column({
+    name: 'email',
+    type: 'varchar',
+  })
+  email: string;
 
   @Column({
     name: 'status',

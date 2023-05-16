@@ -1,4 +1,4 @@
-import { AdminStatus, Role } from 'src/shares/enum/admin.enum';
+import { AdminRole, AdminStatus, Role } from 'src/shares/enum/admin.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 
 export interface IJwtPayload {
@@ -11,7 +11,7 @@ export interface IJwtPayload {
 
 export interface IJwtAdminPayload {
   id: number;
-  role: Role;
+  role: AdminRole;
   status: AdminStatus;
   username: string;
 }

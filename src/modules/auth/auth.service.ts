@@ -22,7 +22,7 @@ import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { IJwtAdminPayload, IJwtPayload } from './interfaces/payload.interface';
 import { AdminRepository } from 'src/models/repositories/admin.repository';
-import { Role, AdminStatus } from 'src/shares/enum/admin.enum';
+import { Role, AdminStatus, AdminRole } from 'src/shares/enum/admin.enum';
 import { CreateAdminDto } from './dto/create-admin.dto';
 
 @Injectable()
@@ -214,7 +214,7 @@ export class AuthService {
     await this.adminRepositoty.insert({
       username,
       password: passwordHash,
-      role: Role.ADMIN,
+      role: AdminRole.ADMIN,
       status: AdminStatus.ACTIVE,
     });
   }

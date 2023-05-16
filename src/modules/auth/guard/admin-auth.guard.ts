@@ -8,7 +8,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AuthGuard } from '@nestjs/passport';
 import { firstValueFrom, isObservable } from 'rxjs';
 import { AdminService } from 'src/modules/admin/admin.service';
-import { Role } from 'src/shares/enum/admin.enum';
+import { AdminRole, Role } from 'src/shares/enum/admin.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { Connection } from 'typeorm';
 
@@ -38,7 +38,7 @@ export class AdminAuthGuard extends AuthGuard('jwt') {
         adminJwt.id,
         adminJwt.username,
       );
-      if (!admin || admin.role !== Role.ADMIN) {
+      if (!admin || admin.role !== AdminRole.ADMIN) {
         throw new HttpException(
           httpErrors.UNAUTHORIZED,
           HttpStatus.UNAUTHORIZED,

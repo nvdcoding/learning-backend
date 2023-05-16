@@ -112,4 +112,30 @@ export const httpResponse = {
     message: 'Get note success',
     code: 'NOTE_002',
   },
+  //ADMIN
+  CREATE_ADMIN_SUCCESS: {
+    message: 'Create admin success',
+    code: 'ADMIN_001',
+    statusCode: 200,
+  },
+  ACTIVE_ADMIN_SUCCESS: {
+    message: 'Active admin success',
+    code: 'ADMIN_002',
+    statusCode: 200,
+  },
+  GET_ADMIN_SUCCESS: {
+    message: 'Get admin success',
+    code: 'ADMIN_003',
+    statusCode: 200,
+  },
+  CHANGE_STATUS_MOD_SUCCESS: {
+    message: 'Change status mod success',
+    code: 'ADMIN_004',
+    statusCode: 200,
+  },
+  DELETE_MOD_SUCCESS: {
+    message: 'Delete mod success',
+    code: 'ADMIN_005',
+    statusCode: 200,
+  },
 };

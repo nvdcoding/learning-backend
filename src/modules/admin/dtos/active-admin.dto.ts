@@ -6,9 +6,8 @@ import {
   Matches,
   IsEnum,
 } from 'class-validator';
-import { AdminRole } from 'src/shares/enum/admin.enum';
 
-export class CreateAdminDto {
+export class ActiveAdminDto {
   @ApiProperty()
   @IsNotEmpty()
   @IsEmail()
@@ -20,7 +19,15 @@ export class CreateAdminDto {
   username: string;
 
   @ApiProperty()
+  @IsString()
   @IsNotEmpty()
-  @IsEnum(AdminRole)
-  role: AdminRole;
+  token: string;
+
+  @ApiProperty()
+  @IsNotEmpty()
+  @Matches(/((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/, {
+    message: 'password too weak',
+  })
+  @IsString()
+  password: string;
 }

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import { AdminRepository } from 'src/models/repositories/admin.repository';
 import { authConfig } from 'src/configs/auth.config';
-import { AdminStatus, Role } from 'src/shares/enum/admin.enum';
+import { AdminRole, AdminStatus, Role } from 'src/shares/enum/admin.enum';
 /// NOT WORK
 @Injectable()
 export class AuthCommand {
@@ -35,7 +35,7 @@ export class AuthCommand {
     await this.adminRepository.insert({
       username,
       password: passwordHash,
-      role: Role.ADMIN,
+      role: AdminRole.ADMIN,
       status: AdminStatus.ACTIVE,
     });
     return true;
