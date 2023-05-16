@@ -46,7 +46,7 @@ export class PostService {
     });
 
     return {
-      ...httpResponse.GET_SUCCES,
+      ...httpResponse.GET_SUCCESS,
       data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
         posts,
         options.page || 1,
@@ -69,7 +69,7 @@ export class PostService {
       relations: ['author'],
     });
     return {
-      ...httpResponse.GET_SUCCES,
+      ...httpResponse.GET_SUCCESS,
       data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
         posts,
         page || 1,
@@ -90,7 +90,7 @@ export class PostService {
       throw new HttpException(httpErrors.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     delete post.author.password;
-    return { ...httpResponse.GET_SUCCES, data: post };
+    return { ...httpResponse.GET_SUCCESS, data: post };
   }
 
   async adminGetOnePost(postId: number): Promise<Response> {
@@ -104,7 +104,7 @@ export class PostService {
       throw new HttpException(httpErrors.POST_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     delete post.author.password;
-    return { ...httpResponse.GET_SUCCES, data: post };
+    return { ...httpResponse.GET_SUCCESS, data: post };
   }
 
   async createPost(body: CreateBlogDto, userId: number): Promise<Response> {
@@ -181,7 +181,7 @@ export class PostService {
       relations: ['author'],
     });
     return {
-      ...httpResponse.GET_SUCCES,
+      ...httpResponse.GET_SUCCESS,
       data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
         posts,
         page || 1,

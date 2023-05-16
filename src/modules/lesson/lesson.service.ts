@@ -109,7 +109,7 @@ export class LessonService {
       };
     });
     return {
-      ...httpResponse.GET_SUCCES,
+      ...httpResponse.GET_SUCCESS,
       data: { lessons: lessonData, currentLesson },
     };
   }
@@ -174,7 +174,7 @@ export class LessonService {
     }
 
     return {
-      ...httpResponse.GET_SUCCES,
+      ...httpResponse.GET_SUCCESS,
       data: { ...lesson, nextLessonId, previousLessonId },
     };
   }
@@ -243,7 +243,7 @@ export class LessonService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    return { ...httpResponse.GET_SUCCES, data: currentLesson };
+    return { ...httpResponse.GET_SUCCESS, data: currentLesson };
   }
 
   async createNote(body: CreateNoteDto, userId: number): Promise<Response> {

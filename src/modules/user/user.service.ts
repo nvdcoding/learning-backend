@@ -10,13 +10,23 @@ import {
   TransactionStatus,
   TransactionType,
 } from 'src/shares/enum/transaction.enum';
-import { UserStatus } from 'src/shares/enum/user.enum';
+import { ChangeStatus, UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { Response } from 'src/shares/response/response.interface';
 import { httpResponse } from 'src/shares/response';
 import { UserPreferDto } from './dtos/update-user-setting.dto';
 import { UserPreferRepository } from 'src/models/repositories/user-prefer.repository';
 import { UserPrefer } from 'src/models/entities/user-prefer.entity';
+import { AdminGetUsersDto } from './dtos/get-list-user.dto';
+import {
+  BasePaginationRequestDto,
+  BasePaginationResponseDto,
+} from 'src/shares/dtos/base-pagination.dto';
+import { PostRepository } from 'src/models/repositories/post.repository';
+import { PostStatus } from 'src/shares/enum/post.enum';
+import { Between, In, Not } from 'typeorm';
+import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
+import { GetTransactionDto } from './dtos/get-transaction.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getIP = promisify(require('external-ip')());
 @Injectable()
@@ -25,6 +35,7 @@ export class UserService {
     private readonly userRepository: UserRepository,
     private readonly transactionRepository: TransactionRepository,
     private readonly userPreferRepository: UserPreferRepository,
+    private readonly postRepository: PostRepository,
   ) {}
 
   // async getAllCourses() {
@@ -190,7 +201,7 @@ export class UserService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    return { ...httpResponse.GET_SUCCES, data: user };
+    return { ...httpResponse.GET_SUCCESS, data: user };
   }
 
   async updateUserPrefer(
@@ -223,5 +234,111 @@ export class UserService {
     }
 
     return httpResponse.UPDATE_COURSE_SUCCESS;
+  }
+
+  async getListUser(options: AdminGetUsersDto): Promise<Response> {
+    const { keyword, limit, page } = options;
+    const users = await this.userRepository.getUsers(keyword, page, limit);
+    return {
+      ...httpResponse.GET_SUCCESS,
+      data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        users,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async getUserPost(
+    options: BasePaginationRequestDto,
+    userId: number,
+  ): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const posts = await this.postRepository.findAndCount({
+      where: {
+        status: In([PostStatus.ACTIVE, PostStatus.WAITING]),
+        author: user,
+      },
+      relations: ['author', 'comments'],
+      take: options.limit,
+      skip: (options.page - 1) * options.limit,
+    });
+
+    return {
+      ...httpResponse.GET_SUCCESS,
+      data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        posts,
+        options.page || 1,
+        options.limit || 10,
+      ),
+    };
+  }
+
+  async changeUserStatus(body: AdminChangeStatusUserDto): Promise<Response> {
+    const { status, userId } = body;
+    const user = await this.userRepository.findOne({
+      id: userId,
+      verifyStatus: Not(UserStatus.INACTIVE),
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    // to do send mail
+    await this.userRepository.update(
+      { id: userId },
+      {
+        verifyStatus:
+          status === ChangeStatus.ACTIVE
+            ? UserStatus.ACTIVE
+            : UserStatus.LOCKED,
+      },
+    );
+    return httpResponse.UPDATE_USER_SUCCESS;
+  }
+
+  async deleteUser(userId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this.userRepository.softDelete(user.id);
+    return httpResponse.DELETE_USER_SUCCESS;
+  }
+
+  async getUserTransaction(
+    options: GetTransactionDto,
+    userId: number,
+  ): Promise<Response> {
+    const { limit, page, startDate, endDate } = options;
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const transaction = await this.transactionRepository.findAndCount({
+      where: {
+        user,
+        time: Between(
+          new Date(startDate),
+          new Date(moment(endDate).add(1, 'day').toString()),
+        ),
+      },
+    });
+    return {
+      ...httpResponse.GET_SUCCESS,
+      data: BasePaginationResponseDto.convertToPaginationWithTotalPages(
+        transaction,
+        page,
+        limit,
+      ),
+    };
   }
 }

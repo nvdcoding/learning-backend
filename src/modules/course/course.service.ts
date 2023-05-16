@@ -29,7 +29,7 @@ export class CourseService {
 
   async getAllCourses() {
     const data = await this.courseRepository.find();
-    return { ...httpResponse.GET_SUCCES, data };
+    return { ...httpResponse.GET_SUCCESS, data };
   }
 
   async getOneCourse(
@@ -96,7 +96,7 @@ export class CourseService {
       lessonList,
       isRegisted,
     };
-    return { ...httpResponse.GET_SUCCES, data: responseData };
+    return { ...httpResponse.GET_SUCCESS, data: responseData };
   }
 
   async createCourse(body: CreateCourseDto): Promise<Response> {
@@ -246,6 +246,6 @@ export class CourseService {
       relations: ['course'],
     });
 
-    return { ...httpResponse.GET_SUCCES, data: userCourse };
+    return { ...httpResponse.GET_SUCCESS, data: userCourse };
   }
 }

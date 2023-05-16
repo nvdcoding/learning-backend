@@ -17,7 +17,7 @@ export const httpResponse = {
     code: 'ADMIN_001',
   },
   //
-  GET_SUCCES: {
+  GET_SUCCESS: {
     message: 'Get success',
     code: 'GET success',
   },
@@ -85,6 +85,14 @@ export const httpResponse = {
   UPDATE_USER_PREFER_SUCCESS: {
     message: 'Updated',
     code: 'USER_001',
+  },
+  UPDATE_USER_SUCCESS: {
+    message: 'Updated',
+    code: 'USER_002',
+  },
+  DELETE_USER_SUCCESS: {
+    message: 'Deleted',
+    code: 'USER_003',
   },
   //COMMENT:
   CREATE_COMMENT_SUCCESS: {

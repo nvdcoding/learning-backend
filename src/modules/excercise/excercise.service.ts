@@ -52,7 +52,7 @@ export class ExcerciseService {
       }
     }
 
-    return { ...httpResponse.GET_SUCCES, data: lesson.exercises };
+    return { ...httpResponse.GET_SUCCESS, data: lesson.exercises };
   }
 
   async getOneExcercise(exerciseId: number, userId?: number) {
@@ -81,7 +81,7 @@ export class ExcerciseService {
         );
       }
     }
-    return { ...httpResponse.GET_SUCCES, data: exercise };
+    return { ...httpResponse.GET_SUCCESS, data: exercise };
   }
 
   async createExcercise(lessonId: number, body: CreateExcerciseDto) {
