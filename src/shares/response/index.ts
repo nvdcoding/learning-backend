@@ -103,4 +103,13 @@ export const httpResponse = {
     message: 'DELETE comment',
     code: 'COMMENT_004',
   },
+  // NOTES
+  CREATE_NOTE_SUCCESS: {
+    message: 'Create note success',
+    code: 'NOTE_001',
+  },
+  GET_NOTE_SUCCESS: {
+    message: 'Get note success',
+    code: 'NOTE_002',
+  },
 };

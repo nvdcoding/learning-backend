@@ -109,4 +109,8 @@ export const httpErrors = {
     message: 'Comment not found',
     code: 'ERR_COMMENT_001',
   },
+  USER_LESSON_NOT_FOUND: {
+    message: 'User lesson not found',
+    code: 'ERR_COMMENT_001',
+  },
 };

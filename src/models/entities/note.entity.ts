@@ -14,7 +14,8 @@ export class Note {
 
   @Column({
     name: 'seconds',
-    type: 'bigint',
+    type: 'int',
+    nullable: true,
   })
   seconds: number;
 

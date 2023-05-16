@@ -14,6 +14,7 @@ import { Response } from 'src/shares/response/response.interface';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
+import { CreateNoteDto } from './dtos/creaet-note.dto';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
 import { GetLessonDto } from './dtos/get-lesson.dto';
 import { UpdateLessonDto } from './dtos/update-lesson.dto';
@@ -36,6 +37,24 @@ export class LessonController {
       'user',
       userId,
     );
+  }
+
+  @Post('/user/note')
+  @UseGuards(UserAuthGuard)
+  async userCreateNote(
+    @Body() body: CreateNoteDto,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.lessonService.createNote(body, userId);
+  }
+
+  @Get('/user/note/:lessonId')
+  @UseGuards(UserAuthGuard)
+  async getUserNotes(
+    @Param('lessonId') lessonId: number,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.lessonService.getLessonNote(lessonId, userId);
   }
 
   @Get('/admin')

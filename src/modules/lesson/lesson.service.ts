@@ -8,7 +8,9 @@ import {
 import { Lesson } from 'src/models/entities/lesson.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
+import { NoteRepository } from 'src/models/repositories/note.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
+import { UserLessonRepository } from 'src/models/repositories/user-lesson.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { CourseStatus } from 'src/shares/enum/course.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
@@ -17,6 +19,7 @@ import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { In } from 'typeorm';
 import { CourseService } from '../course/course.service';
+import { CreateNoteDto } from './dtos/creaet-note.dto';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
 import { GetLessonDto } from './dtos/get-lesson.dto';
 import { UpdateLessonDto } from './dtos/update-lesson.dto';
@@ -29,6 +32,8 @@ export class LessonService {
     private readonly userCourseRepository: UserCourseRepository,
     private readonly courseService: CourseService,
     private readonly userRepository: UserRepository,
+    private readonly noteRepository: NoteRepository,
+    private readonly userLessonRepository: UserLessonRepository,
   ) {}
 
   async getLessonOfCourse(courseId: number, role: string, userId?: number) {
@@ -110,13 +115,13 @@ export class LessonService {
   }
 
   async getOneLesson(lessonId: number, userId?: number) {
-    const data = await this.lessonRepository.findOne({
+    const lesson = await this.lessonRepository.findOne({
       where: {
         id: lessonId,
       },
       relations: ['exercises', 'course', 'course.lessons'],
     });
-    if (!data) {
+    if (!lesson) {
       throw new HttpException(
         httpErrors.LESSON_NOT_FOUND,
         HttpStatus.NOT_FOUND,
@@ -126,9 +131,24 @@ export class LessonService {
     let previousLessonId = null;
     // let currentLesson = null;
     if (userId) {
-      const res = await this.courseService.isHaveCourse(data.course.id, userId);
+      const user = await this.userRepository.findOne({
+        where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+      });
+      const userLesson = await this.userLessonRepository.findOne({
+        where: { lesson, user },
+      });
+      if (!userLesson) {
+        await this.userLessonRepository.insert({
+          user,
+          lesson,
+        });
+      }
+      const res = await this.courseService.isHaveCourse(
+        lesson.course.id,
+        userId,
+      );
       const { previousLesson, nextLesson } =
-        await this.getPreviousAndNextLesson(data);
+        await this.getPreviousAndNextLesson(lesson);
       nextLessonId = nextLesson;
       previousLessonId = previousLesson;
       if (res.currentLesson === null) {
@@ -143,19 +163,19 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      console.log('DSADASD', { ckec: data.exercises });
+      console.log('DSADASD', { ckec: lesson.exercises });
 
-      if (data.exercises.length === 0) {
+      if (lesson.exercises.length === 0) {
         await this.userCourseRepository.update(
           { id: res.id },
-          { currentLesson: nextLesson ? nextLesson.id : data.id },
+          { currentLesson: nextLesson ? nextLesson.id : lesson.id },
         );
       }
     }
 
     return {
       ...httpResponse.GET_SUCCES,
-      data: { ...data, nextLessonId, previousLessonId },
+      data: { ...lesson, nextLessonId, previousLessonId },
     };
   }
 
@@ -224,5 +244,77 @@ export class LessonService {
       );
     }
     return { ...httpResponse.GET_SUCCES, data: currentLesson };
+  }
+
+  async createNote(body: CreateNoteDto, userId: number): Promise<Response> {
+    const [user, lesson] = await Promise.all([
+      this.userRepository.findOne({
+        where: {
+          id: userId,
+          verifyStatus: UserStatus.ACTIVE,
+        },
+      }),
+      this.lessonRepository.findOne({ where: { id: body.lessonId } }),
+    ]);
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (!lesson) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const userLesson = await this.userLessonRepository.findOne({
+      where: {
+        user,
+        lesson,
+      },
+    });
+    if (!userLesson) {
+      throw new HttpException(httpErrors.USER_EXIST, HttpStatus.NOT_FOUND);
+    }
+    await this.noteRepository.insert({
+      userLesson,
+      notes: body.notes,
+      seconds: body.second ? body.second : null,
+    });
+    return httpResponse.CREATE_NOTE_SUCCESS;
+  }
+
+  async getLessonNote(lessonId: number, userId: number): Promise<Response> {
+    const [user, lesson] = await Promise.all([
+      this.userRepository.findOne({
+        where: {
+          id: userId,
+          verifyStatus: UserStatus.ACTIVE,
+        },
+      }),
+      this.lessonRepository.findOne({ where: { id: lessonId } }),
+    ]);
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    if (!lesson) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const userLesson = await this.userLessonRepository.findOne({
+      where: {
+        user,
+        lesson,
+      },
+    });
+    if (!userLesson) {
+      throw new HttpException(httpErrors.USER_EXIST, HttpStatus.NOT_FOUND);
+    }
+    const notes = await this.noteRepository.find({
+      where: {
+        userLesson,
+      },
+    });
+    return { ...httpResponse.GET_NOTE_SUCCESS, data: notes };
   }
 }
