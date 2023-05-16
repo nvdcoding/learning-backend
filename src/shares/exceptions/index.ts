@@ -45,6 +45,11 @@ export const httpErrors = {
     message: `Please wait for ${emailConfig.registerTTL} seconds to resend`,
     code: `ERR_EMAIL_001`,
   },
+  //REPoRT
+  REPORT_NOT_FOUND: {
+    message: `Report not found`,
+    code: `ERR_REPORT_001`,
+  },
   //REGISTER
   REGISTER_TOKEN_NOT_FOUND: {
     message: `Register token not found`,

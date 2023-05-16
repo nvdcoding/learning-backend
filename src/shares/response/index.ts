@@ -146,4 +146,25 @@ export const httpResponse = {
     code: 'ADMIN_005',
     statusCode: 200,
   },
+  // REPORT
+  CREATE_REPORT_SUCCESS: {
+    message: 'Report created',
+    code: 'REPORT_001',
+    statusCode: 200,
+  },
+  GET_REPORT_SUCCESS: {
+    message: 'Get report success',
+    code: 'REPORT_002',
+    statusCode: 200,
+  },
+  DELETE_REPORT_SUCCESS: {
+    message: 'Deleted report success',
+    code: 'REPORT_003',
+    statusCode: 200,
+  },
+  HANLED_REPORT: {
+    message: 'Handled Report',
+    code: 'REPORT_004',
+    statusCode: 200,
+  },
 };
