@@ -1,4 +1,5 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Report } from 'src/models/entities/report.entity';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { ReportRepository } from 'src/models/repositories/report.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
@@ -113,10 +114,16 @@ export class ReportService {
       );
     }
     if (action === HandleReportPostAction.SKIP) {
-      await this.deleteReport(reportId);
+      await this.reportRepository.update(
+        { id: reportId },
+        { status: ReportStatus.PROCESSED },
+      );
     } else {
       await Promise.all([
-        this.reportRepository.softRemove([...report.post.reports]),
+        this.reportRepository.update(
+          { post: report.post },
+          { status: ReportStatus.PROCESSED },
+        ),
         this.postRepository.softDelete(report.post.id),
       ]);
     }
