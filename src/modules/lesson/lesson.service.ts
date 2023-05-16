@@ -191,11 +191,24 @@ export class LessonService {
         HttpStatus.NOT_FOUND,
       );
     }
-    await this.lessonRepository.save({
+    const lastLesson = await this.lessonRepository.findOne({
+      where: { course },
+      order: {
+        id: 'DESC',
+      },
+    });
+    const savedLesson = await this.lessonRepository.save({
       course,
       name,
       link,
     });
+    const lastLessonId = lastLesson.id;
+    await this.userCourseRepository.update(
+      { currentLesson: lastLessonId },
+      {
+        currentLesson: savedLesson.id,
+      },
+    );
     return httpResponse.CREATE_LESSON_SUCCES;
   }
 
