@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
@@ -37,6 +38,12 @@ export class LessonController {
       'user',
       userId,
     );
+  }
+
+  @Delete('/:id')
+  @UseGuards(AdminModAuthGuard)
+  async deleteLesson(@Param('id') id: number): Promise<Response> {
+    return this.lessonService.deleteLesson(id);
   }
 
   @Post('/user/note')

@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -16,6 +18,7 @@ import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { CreateExcerciseDto } from './dtos/create-excercise.dto';
 import { DoExerciseDto } from './dtos/do-exercise.dto';
 import { GetExerciseDto } from './dtos/get-exercise.dto';
+import { UpdateExerciseDto } from './dtos/update-exercise.dto';
 import { ExcerciseService } from './excercise.service';
 
 @Controller('exercises')
@@ -28,6 +31,12 @@ export class ExcerciseController {
   // async getAllCourses(): Promise<Response> {
   //   // return this.courseService.getAllCourses();
   // }
+
+  @Delete('/:id')
+  @UseGuards(AdminModAuthGuard)
+  async deleteExercise(@Param('id') id: number) {
+    return this.excerciseService.deleteExercise(id);
+  }
 
   @Post('/')
   @UseGuards(AdminModAuthGuard)

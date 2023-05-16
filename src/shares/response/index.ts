@@ -51,6 +51,10 @@ export const httpResponse = {
     message: 'Lesson updated',
     code: 'LESSON_002',
   },
+  DELETE_LESSON_SUCCES: {
+    message: 'Lesson deleted',
+    code: 'LESSON_003',
+  },
   // EXCERCISE:
   CREATE_EXCERCISE_SUCCES: {
     message: 'Excercise created',
@@ -59,6 +63,10 @@ export const httpResponse = {
   UPDATE_EXCERCISE_SUCCES: {
     message: 'Excercise updated',
     code: 'EXCERCISE_002',
+  },
+  DELETE_EXCERCISE_SUCCES: {
+    message: 'Excercise deleted',
+    code: 'EXCERCISE_003',
   },
   // POST
   CREATE_POST_SUCCESS: {

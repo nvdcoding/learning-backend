@@ -16,6 +16,7 @@ import { UserRepository } from 'src/models/repositories/user.repository';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { LessonService } from '../lesson/lesson.service';
+import { UpdateExerciseDto } from './dtos/update-exercise.dto';
 @Injectable()
 export class ExcerciseService {
   constructor(
@@ -243,5 +244,51 @@ export class ExcerciseService {
     }
 
     return { ...httpResponse.ADMIN_LOGIN_SUCCESS, data: result };
+  }
+
+  // async updateExercise(body: UpdateExerciseDto): Promise<Response> {
+  //   const exercise = await this.excerciseRepository.findOne({
+  //     where: {
+  //       id: body.exerciseId,
+  //     },
+  //   });
+  //   if (!exercise) {
+  //     throw new HttpException(
+  //       httpErrors.EXERCISE_NOT_FOUND,
+  //       HttpStatus.NOT_FOUND,
+  //     );
+  //   }
+  //   // const testCases = await this.testcaseRepository.save([
+  //   //   ...testcases.map((e) => {
+  //   //     return { ...e, exercise };
+  //   //   }),
+  //   // ]);
+  //   await this.excerciseRepository.update(body.exerciseId, {
+  //     question: body.question,
+  //     description: body.description,
+  //     testCases: body.testcases,
+  //   });
+  //   return httpResponse.UPDATE_LESSON_SUCCES;
+  // }
+
+  async deleteExercise(exerciseId: number): Promise<Response> {
+    const exercise = await this.excerciseRepository.findOne({
+      where: {
+        id: exerciseId,
+      },
+      relations: ['testCases'],
+    });
+    if (!exercise) {
+      throw new HttpException(
+        httpErrors.EXERCISE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const userExerciseIds = exercise.testCases.map((e) => e.id);
+    await Promise.all([
+      this.testcaseRepository.softDelete([...userExerciseIds]),
+      this.excerciseRepository.softDelete(exercise.id),
+    ]);
+    return httpResponse.DELETE_EXCERCISE_SUCCES;
   }
 }

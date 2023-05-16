@@ -7,6 +7,7 @@ import {
 } from '@nestjs/common';
 import { Lesson } from 'src/models/entities/lesson.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
+import { ExcerciseRepository } from 'src/models/repositories/exercise.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
 import { NoteRepository } from 'src/models/repositories/note.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
@@ -34,6 +35,7 @@ export class LessonService {
     private readonly userRepository: UserRepository,
     private readonly noteRepository: NoteRepository,
     private readonly userLessonRepository: UserLessonRepository,
+    private readonly exerciseRepository: ExcerciseRepository,
   ) {}
 
   async getLessonOfCourse(courseId: number, role: string, userId?: number) {
@@ -329,5 +331,24 @@ export class LessonService {
       },
     });
     return { ...httpResponse.GET_NOTE_SUCCESS, data: notes };
+  }
+
+  async deleteLesson(lessonId: number): Promise<Response> {
+    const lesson = await this.lessonRepository.findOne({
+      where: { id: lessonId },
+      relations: ['exercises'],
+    });
+    if (!lesson) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const exerciesId = lesson.exercises.map((e) => e.id);
+    await Promise.all([
+      this.lessonRepository.softDelete(lessonId),
+      this.exerciseRepository.softDelete([...exerciesId]),
+    ]);
+    return httpResponse.DELETE_LESSON_SUCCES;
   }
 }
