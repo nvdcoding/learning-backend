@@ -131,7 +131,6 @@ export class AuthService {
     if (!user) {
       throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
-    console.log(checkToken);
     if (token !== checkToken) {
       throw new HttpException(
         httpErrors.REGISTER_TOKEN_NOT_MATCH,

@@ -24,6 +24,7 @@ import { ActiveAdminDto } from './dtos/active-admin.dto';
 import { AdminUpdateMod } from './dtos/update-mod.dto';
 import { GetListAdminDto } from './dtos/get-list-admin.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
+import { Admin } from 'src/models/entities/admin.entity';
 
 @Injectable()
 export class AdminService {
@@ -34,7 +35,8 @@ export class AdminService {
     private readonly mailService: MailService,
     private readonly permissionRepository: PermissionRepository,
   ) {}
-  async getAdminByIdAndUsername(id: number, username: string) {
+
+  async getAdminByIdAndUsername(id: number, username: string): Promise<Admin> {
     return this.adminRepository.findOne({
       where: {
         id,

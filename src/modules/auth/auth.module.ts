@@ -13,7 +13,6 @@ import { AdminModule } from '../admin/admin.module';
   imports: [
     MailModule,
     ConfigModule,
-    AdminModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     JwtModule.registerAsync({
       imports: [ConfigModule, MailModule],
@@ -27,6 +26,7 @@ import { AdminModule } from '../admin/admin.module';
       inject: [ConfigService],
     }),
     UserModule,
+    AdminModule,
   ],
   providers: [AuthService, JwtStrategy, AuthCommand, Logger],
   controllers: [AuthController],

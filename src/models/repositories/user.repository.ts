@@ -9,10 +9,8 @@ export class UserRepository extends Repository<User> {
       'user.id',
       'user.email',
       'user.username',
-      'user.phone',
       'user.avatar',
       'user.verifyStatus',
-      'user.voucherPoint',
     ]);
     if (keyword) {
       const keywordLike = `%${keyword}%`;
@@ -21,7 +19,6 @@ export class UserRepository extends Repository<User> {
         .orWhere('user.username LIKE :keyword')
         .orWhere('user.name LIKE :keyword')
         .orWhere('user.id LIKE :keyword')
-        .orWhere('user.phone LIKE :keyword')
         .setParameters({ keyword: keywordLike });
     }
     queryBuilder.orderBy('user.id', 'DESC');
