@@ -17,6 +17,7 @@ import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
 import { DepositDto } from './dtos/deposit.dto';
+import { AdminGetUsersDto } from './dtos/get-list-user.dto';
 import { GetTransactionDto } from './dtos/get-transaction.dto';
 import { UserPreferDto } from './dtos/update-user-setting.dto';
 import { UserService } from './user.service';
@@ -71,6 +72,12 @@ export class UserController {
     @Body() body: AdminChangeStatusUserDto,
   ): Promise<Response> {
     return this.userService.changeUserStatus(body);
+  }
+
+  @Get('/')
+  @UseGuards(AdminModAuthGuard)
+  async getListUser(@Query() options: AdminGetUsersDto): Promise<Response> {
+    return this.userService.getListUser(options);
   }
 
   @Delete('/:id')
