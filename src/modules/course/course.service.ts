@@ -5,7 +5,7 @@ import { TransactionRepository } from 'src/models/repositories/transaction.repos
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
-import { CourseType, CourseStatus } from 'src/shares/enum/course.enum';
+import { CourseType, CourseStatus, Path } from 'src/shares/enum/course.enum';
 import {
   TransactionStatus,
   TransactionType,
@@ -14,7 +14,7 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
-import { Not } from 'typeorm';
+import { In, Not } from 'typeorm';
 import { CreateCourseDto } from './dtos/create-course.dto';
 import { UpdateCourseDto } from './dtos/update-course.dto';
 
@@ -29,6 +29,43 @@ export class CourseService {
 
   async getAllCourses() {
     const data = await this.courseRepository.find();
+    return { ...httpResponse.GET_SUCCESS, data };
+  }
+
+  async getPreferCourse(userId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+      relations: ['userPrefer'],
+    });
+    const courseMap = user.userPrefer;
+    const path = [];
+    if (courseMap.courseBackend) {
+      path.push(Path.BACKEND);
+    }
+    if (courseMap.courseBasic) {
+      path.push(Path.BASIC);
+    }
+    if (courseMap.courseFrontend) {
+      path.push(Path.FRONTEND);
+    }
+    if (courseMap.courseFullstack) {
+      path.push(Path.FULLSTACK);
+    }
+    if (courseMap.courseMobile) {
+      path.push(Path.MOBILE);
+    }
+    if (courseMap.courseOther) {
+      path.push(Path.OTHER);
+    }
+    const data = await this.courseRepository.find({
+      where: {
+        path: In(path),
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+
     return { ...httpResponse.GET_SUCCESS, data };
   }
 
