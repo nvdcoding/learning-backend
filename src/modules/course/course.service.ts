@@ -210,14 +210,12 @@ export class CourseService {
         HttpStatus.NOT_FOUND,
       );
     }
-
     if (+user.coinAvailable < course.price) {
       throw new HttpException(
         httpErrors.INSUFFICIENT_BALANCE,
         HttpStatus.BAD_REQUEST,
       );
     }
-
     const available = +user.coinAvailable - +course.price;
     const coin = +user.coin - +user.coin;
     const userCourse = new UserCourse();
@@ -236,7 +234,6 @@ export class CourseService {
         status: TransactionStatus.PROCESSED,
       }),
     ]);
-
     return httpResponse.REGISTER_COURSE_SUCCES;
   }
 

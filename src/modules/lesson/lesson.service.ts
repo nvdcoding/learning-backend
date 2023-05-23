@@ -139,6 +139,12 @@ export class LessonService {
       const userLesson = await this.userLessonRepository.findOne({
         where: { lesson, user },
       });
+      const userCourse = await this.userCourseRepository.findOne({
+        user,
+        course: {
+          id: lesson.course.id,
+        },
+      });
       if (!userLesson) {
         await this.userLessonRepository.insert({
           user,
@@ -167,7 +173,10 @@ export class LessonService {
       }
       console.log('DSADASD', { ckec: lesson.exercises });
 
-      if (lesson.exercises.length === 0) {
+      if (
+        userCourse.currentLesson === lesson.id &&
+        lesson.exercises.length === 0
+      ) {
         await this.userCourseRepository.update(
           { id: res.id },
           { currentLesson: nextLesson ? nextLesson.id : lesson.id },
