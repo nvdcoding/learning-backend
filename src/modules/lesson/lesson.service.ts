@@ -123,6 +123,7 @@ export class LessonService {
       },
       relations: ['exercises', 'course', 'course.lessons'],
     });
+    console.log({ lesson });
     if (!lesson) {
       throw new HttpException(
         httpErrors.LESSON_NOT_FOUND,
@@ -165,7 +166,7 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      console.log(res.currentLesson, '111');
+      console.log(res.currentLesson, '111', lessonId);
       if (res.currentLesson < lessonId) {
         throw new HttpException(
           httpErrors.LESSON_LOCKED,
