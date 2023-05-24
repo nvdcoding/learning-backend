@@ -165,6 +165,7 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
+      console.log(res.currentLesson, '111');
       if (res.currentLesson < lessonId) {
         throw new HttpException(
           httpErrors.LESSON_LOCKED,
