@@ -185,7 +185,7 @@ export class ExcerciseService {
         );
         result.push({
           ...testcase,
-          status: data.output === testcase.output ? 1 : 0,
+          status: data.output.trim() === testcase.output.trim() ? 1 : 0,
           output: data.output,
           expected: testcase.output,
         });
