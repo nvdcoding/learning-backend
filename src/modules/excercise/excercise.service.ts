@@ -183,10 +183,11 @@ export class ExcerciseService {
           `https://api.jdoodle.com/v1/execute`,
           program,
         );
+        console.log(data.iy);
         result.push({
           ...testcase,
           status: data.output.trim() === testcase.output.trim() ? 1 : 0,
-          output: data.output,
+          output: data.output.trim(),
           expected: testcase.output,
         });
       } catch (error) {
