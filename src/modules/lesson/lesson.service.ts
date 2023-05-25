@@ -233,7 +233,9 @@ export class LessonService {
       const userLesson = await this.userLessonRepository.find({
         where: {
           isDone: true,
-          id: lastLessonId,
+          lesson: {
+            id: lastLessonId,
+          },
         },
         relations: ['user'],
       });
