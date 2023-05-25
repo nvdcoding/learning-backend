@@ -11,6 +11,7 @@ import { ExcerciseRepository } from 'src/models/repositories/exercise.repository
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
 import { NoteRepository } from 'src/models/repositories/note.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
+import { UserExerciseRepository } from 'src/models/repositories/user-exercise.repository';
 import { UserLessonRepository } from 'src/models/repositories/user-lesson.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { CourseStatus } from 'src/shares/enum/course.enum';
@@ -36,6 +37,7 @@ export class LessonService {
     private readonly noteRepository: NoteRepository,
     private readonly userLessonRepository: UserLessonRepository,
     private readonly exerciseRepository: ExcerciseRepository,
+    private readonly userExerciseRepository: UserExerciseRepository,
   ) {}
 
   async getLessonOfCourse(courseId: number, role: string, userId?: number) {
@@ -209,6 +211,7 @@ export class LessonService {
       order: {
         id: 'DESC',
       },
+      relations: ['exercises'],
     });
     const savedLesson = await this.lessonRepository.save({
       course,
@@ -216,12 +219,21 @@ export class LessonService {
       link,
     });
     const lastLessonId = lastLesson.id;
-    await this.userCourseRepository.update(
-      { currentLesson: lastLessonId },
-      {
-        currentLesson: savedLesson.id,
-      },
-    );
+    if (lastLesson.exercises.length == 0) {
+      await this.userCourseRepository.update(
+        { currentLesson: lastLessonId },
+        {
+          currentLesson: savedLesson.id,
+        },
+      );
+    } else {
+      const countExercise = lastLesson.exercises.length;
+      const userCourse = await this.u.find({
+        where: {
+          status: true,
+        },
+      });
+    }
     return httpResponse.CREATE_LESSON_SUCCES;
   }
 

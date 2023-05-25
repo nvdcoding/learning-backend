@@ -28,7 +28,23 @@ export class CourseService {
   ) {}
 
   async getAllCourses() {
-    const data = await this.courseRepository.find();
+    const data = await this.courseRepository.find({
+      select: [
+        'id',
+        'name',
+        'description',
+        'goal',
+        'language',
+        'level',
+        'img',
+        'path',
+        'requirement',
+        'price',
+        'type',
+        'status',
+      ],
+      relations: ['userCourses', 'userCourses.id'],
+    });
     return { ...httpResponse.GET_SUCCESS, data };
   }
 
