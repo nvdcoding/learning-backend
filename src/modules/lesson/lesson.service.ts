@@ -210,7 +210,7 @@ export class LessonService {
       order: {
         id: 'DESC',
       },
-      relations: ['exercises', ''],
+      relations: ['exercises'],
     });
     const savedLesson = await this.lessonRepository.save({
       course,
