@@ -212,12 +212,16 @@ export class LessonService {
       },
       relations: ['exercises'],
     });
+
     const savedLesson = await this.lessonRepository.save({
       course,
       name,
       link,
     });
-    const lastLessonId = lastLesson.id;
+    if (!lastLesson) {
+      return httpResponse.CREATE_LESSON_SUCCES;
+    }
+    const lastLessonId = lastLesson?.id;
     if (lastLesson.exercises.length == 0) {
       await this.userCourseRepository.update(
         { currentLesson: lastLessonId },
