@@ -43,9 +43,17 @@ export class CourseService {
         'type',
         'status',
       ],
-      relations: ['userCourses', 'userCourses.id'],
+      relations: ['userCourses'],
     });
-    return { ...httpResponse.GET_SUCCESS, data };
+    const returnData = data.map((e) => {
+      const numberOfMember = e.userCourses.length;
+      delete e.userCourses;
+      return {
+        ...e,
+        numberOfMember,
+      };
+    });
+    return { ...httpResponse.GET_SUCCESS, data: returnData };
   }
 
   async getPreferCourse(userId: number): Promise<Response> {
