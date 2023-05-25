@@ -232,7 +232,7 @@ export class LessonService {
         .createQueryBuilder('userExercise')
         .leftJoinAndSelect('userExercise.user', 'user')
         .where('userExercise.status = :status', { status: true })
-        .andWhere('userExercise.exerciseId IN (:...exercisesOfLastLesson)', {
+        .andWhere('userExercise.exercise_id IN (:...exercisesOfLastLesson)', {
           exercisesOfLastLesson,
         })
         .groupBy('user.id')
