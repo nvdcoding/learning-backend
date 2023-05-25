@@ -228,11 +228,11 @@ export class LessonService {
       );
     } else {
       const countExercise = lastLesson.exercises.length;
-      const userCourse = await this.u.find({
-        where: {
-          status: true,
-        },
-      });
+      // const userCourse = await this.u.find({
+      //   where: {
+      //     status: true,
+      //   },
+      // });
     }
     return httpResponse.CREATE_LESSON_SUCCES;
   }
