@@ -239,13 +239,18 @@ export class LessonService {
         },
         relations: ['user'],
       });
+      if (!userLesson) {
+        return;
+      }
       const userDoneLesson = userLesson.map((e) => e.user.id);
       await this.userCourseRepository.update(
         {
           user: {
             id: In(userDoneLesson),
           },
-          course: lastLesson.course,
+          course: {
+            id: lastLesson.course.id,
+          },
         },
         {
           currentLesson: savedLesson.id,
