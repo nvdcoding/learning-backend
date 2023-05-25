@@ -168,7 +168,6 @@ export class LessonService {
           HttpStatus.BAD_REQUEST,
         );
       }
-      console.log(res.currentLesson, '111', lessonId);
       if (res.currentLesson < lessonId) {
         throw new HttpException(
           httpErrors.LESSON_LOCKED,
@@ -228,11 +227,17 @@ export class LessonService {
       );
     } else {
       const countExercise = lastLesson.exercises.length;
-      // const userCourse = await this.u.find({
-      //   where: {
-      //     status: true,
-      //   },
-      // });
+      const exercisesOfLastLesson = lastLesson.exercises.map((e) => e.id);
+      const userExercise = await this.userExerciseRepository
+        .createQueryBuilder('userExercise')
+        .leftJoinAndSelect('userExercise.user', 'user')
+        .where('userExercise.status = :status', { status: true })
+        .andWhere('userExercise.exerciseId IN (:...exercisesOfLastLesson)', {
+          exercisesOfLastLesson,
+        })
+        .groupBy('user.id')
+        .getMany();
+      console.log(userExercise);
     }
     return httpResponse.CREATE_LESSON_SUCCES;
   }
