@@ -228,16 +228,17 @@ export class LessonService {
     } else {
       const countExercise = lastLesson.exercises.length;
       const exercisesOfLastLesson = lastLesson.exercises.map((e) => e.id);
-      const userExercise = await this.userExerciseRepository
-        .createQueryBuilder('userExercise')
-        .leftJoinAndSelect('userExercise.user', 'user')
-        .where('userExercise.status = :status', { status: true })
-        .andWhere('userExercise.exercise_id IN (:...exercisesOfLastLesson)', {
-          exercisesOfLastLesson,
-        })
-        .groupBy('user.id')
-        .getMany();
-      console.log(userExercise);
+      // l;
+
+      const userExercise = await this.userExerciseRepository.find({
+        where: {
+          status: true,
+          exercise: {
+            id: In([...exercisesOfLastLesson]),
+          },
+        },
+      });
+      console.log({ userExercise });
     }
     return httpResponse.CREATE_LESSON_SUCCES;
   }

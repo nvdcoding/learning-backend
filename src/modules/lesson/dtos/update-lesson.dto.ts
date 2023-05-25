@@ -8,7 +8,7 @@ export class UpdateLessonDto {
   lessonId: number;
 
   @ApiProperty()
-  @IsNumber()
+  @IsString()
   @IsNotEmpty()
   name: string;
 

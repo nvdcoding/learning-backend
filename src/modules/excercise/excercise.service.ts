@@ -238,7 +238,10 @@ export class ExcerciseService {
         console.log({ nextLesson });
         await this.userCourseRepository.update(
           { user: user, course: exercise.lesson.course },
-          { currentLesson: nextLesson ? nextLesson.id : exercise.lesson.id },
+          {
+            currentLesson: nextLesson ? nextLesson.id : exercise.lesson.id,
+            isDoneExercise: nextLesson ? false : true,
+          },
         );
       }
     }

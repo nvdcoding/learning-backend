@@ -26,6 +26,9 @@ export class UserCourse {
   @Column({ name: 'current_lesson', nullable: true })
   currentLesson: number;
 
+  @Column({ name: 'is_done_exercise', nullable: true })
+  isDoneExercise: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 
