@@ -125,7 +125,6 @@ export class LessonService {
       },
       relations: ['exercises', 'course', 'course.lessons'],
     });
-    console.log({ lesson });
     if (!lesson) {
       throw new HttpException(
         httpErrors.LESSON_NOT_FOUND,
@@ -152,6 +151,7 @@ export class LessonService {
         await this.userLessonRepository.insert({
           user,
           lesson,
+          isDone: false,
         });
       }
       const res = await this.courseService.isHaveCourse(
@@ -210,7 +210,7 @@ export class LessonService {
       order: {
         id: 'DESC',
       },
-      relations: ['exercises'],
+      relations: ['exercises', ''],
     });
     const savedLesson = await this.lessonRepository.save({
       course,
@@ -226,19 +226,25 @@ export class LessonService {
         },
       );
     } else {
-      const countExercise = lastLesson.exercises.length;
-      const exercisesOfLastLesson = lastLesson.exercises.map((e) => e.id);
-      // l;
-
-      const userExercise = await this.userExerciseRepository.find({
+      const userLesson = await this.userLessonRepository.find({
         where: {
-          status: true,
-          exercise: {
-            id: In([...exercisesOfLastLesson]),
-          },
+          isDone: true,
+          id: lastLessonId,
         },
+        relations: ['user'],
       });
-      console.log({ userExercise });
+      const userDoneLesson = userLesson.map((e) => e.user.id);
+      await this.userCourseRepository.update(
+        {
+          user: {
+            id: In(userDoneLesson),
+          },
+          course: lastLesson.course,
+        },
+        {
+          currentLesson: savedLesson.id,
+        },
+      );
     }
     return httpResponse.CREATE_LESSON_SUCCES;
   }

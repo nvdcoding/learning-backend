@@ -17,6 +17,7 @@ import { UserStatus } from 'src/shares/enum/user.enum';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { LessonService } from '../lesson/lesson.service';
 import { UpdateExerciseDto } from './dtos/update-exercise.dto';
+import { UserLessonRepository } from 'src/models/repositories/user-lesson.repository';
 @Injectable()
 export class ExcerciseService {
   constructor(
@@ -28,6 +29,7 @@ export class ExcerciseService {
     private readonly userRepository: UserRepository,
     private readonly userCourseRepository: UserCourseRepository,
     private readonly lessonService: LessonService,
+    private readonly userLessonRepository: UserLessonRepository,
   ) {}
   async getExcercises(lessonId: number, userId?: number) {
     const lesson = await this.lessonRepository.findOne(lessonId, {
@@ -231,16 +233,19 @@ export class ExcerciseService {
           .andWhere('userExercise.status = :status', { status: true })
           .getRawOne(),
       ]);
-      console.log(+exercises.length, +completedExercises.count);
       if (+exercises.length === +completedExercises.count) {
         const { nextLesson } =
           await this.lessonService.getPreviousAndNextLesson(exercise.lesson);
-        console.log({ nextLesson });
         await this.userCourseRepository.update(
           { user: user, course: exercise.lesson.course },
           {
             currentLesson: nextLesson ? nextLesson.id : exercise.lesson.id,
-            isDoneExercise: nextLesson ? false : true,
+          },
+        );
+        await this.userLessonRepository.update(
+          { user: user, lesson: exercise.lesson },
+          {
+            isDone: true,
           },
         );
       }

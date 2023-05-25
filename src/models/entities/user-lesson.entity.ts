@@ -34,6 +34,9 @@ export class UserLesson {
   })
   comments: string;
 
+  @Column({ name: 'is_done_exercise', nullable: true })
+  isDone: boolean;
+
   @CreateDateColumn()
   createdAt: Date;
 

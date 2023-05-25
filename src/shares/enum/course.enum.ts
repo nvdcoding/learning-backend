@@ -28,4 +28,5 @@ export enum CourseLanguage {
   C = 'c',
   JAVA = 'java',
   JS = 'nodejs',
+  PYTHON = 'python3',
 }
