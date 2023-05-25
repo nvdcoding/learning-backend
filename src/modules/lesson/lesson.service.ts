@@ -380,10 +380,10 @@ export class LessonService {
       );
     }
     const exerciesId = lesson.exercises.map((e) => e.id);
-    await Promise.all([
-      this.lessonRepository.softDelete(lessonId),
-      this.exerciseRepository.softDelete([...exerciesId]),
-    ]);
+    await this.lessonRepository.softDelete(lessonId);
+    if (exerciesId.length > 0) {
+      await this.exerciseRepository.softDelete([...exerciesId]);
+    }
     return httpResponse.DELETE_LESSON_SUCCES;
   }
 }
