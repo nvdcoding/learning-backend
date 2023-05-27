@@ -167,8 +167,8 @@ export class UserService {
           this.userRepository.update(
             { id: transaction.user.id },
             {
-              coin: user.coin + +vnp_Amount / 100,
-              coinAvailable: user.coinAvailable + +vnp_Amount / 100,
+              coin: (user.coin + +vnp_Amount / 100) / 1000,
+              coinAvailable: (user.coinAvailable + +vnp_Amount / 100) / 1000,
             },
           ),
         ]);
