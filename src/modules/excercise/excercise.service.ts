@@ -255,6 +255,39 @@ export class ExcerciseService {
     return { ...httpResponse.ADMIN_LOGIN_SUCCESS, data: result };
   }
 
+  async updateExercise(body: UpdateExerciseDto): Promise<Response> {
+    const { exerciseId, testcases, question, description } = body;
+    const exercise = await this.excerciseRepository.findOne({
+      where: {
+        id: exerciseId,
+      },
+      relations: ['testCases'],
+    });
+    if (!exercise) {
+      throw new HttpException(
+        httpErrors.EXERCISE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    if (exercise.testCases.length > 0) {
+      await this.testcaseRepository.delete([
+        ...exercise.testCases.map((e) => e.id),
+      ]);
+    }
+    if (testcases.length > 0) {
+      const testCases = await this.testcaseRepository.save([
+        ...testcases.map((e) => {
+          return { ...e, exercise };
+        }),
+      ]);
+    }
+    await this.excerciseRepository.update(
+      { id: exercise.id },
+      { question, description },
+    );
+    return httpResponse.UPDATE_EXCERCISE_SUCCES;
+  }
+
   // async updateExercise(body: UpdateExerciseDto): Promise<Response> {
   //   const exercise = await this.excerciseRepository.findOne({
   //     where: {

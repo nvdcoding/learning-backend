@@ -44,6 +44,12 @@ export class ExcerciseController {
     return this.excerciseService.createExcercise(body.lessonId, body);
   }
 
+  @Put('/')
+  @UseGuards(AdminModAuthGuard)
+  async updateExercise(@Body() body: UpdateExerciseDto) {
+    return this.excerciseService.updateExercise(body);
+  }
+
   @Get('/admin')
   @UseGuards(AdminModAuthGuard)
   async adminGetExcerciseOfLesson(@Query() query: GetExerciseDto) {
