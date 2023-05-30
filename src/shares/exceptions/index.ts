@@ -94,6 +94,10 @@ export const httpErrors = {
     message: `Lesson id Locked`,
     code: `ERR_LESSON_003`,
   },
+  CANT_DELETE_LESSON: {
+    message: `Lesson delete fail`,
+    code: `ERR_LESSON_004`,
+  },
   // EXERCISE
   EXERCISE_NOT_FOUND: {
     message: `Exercise not found`,

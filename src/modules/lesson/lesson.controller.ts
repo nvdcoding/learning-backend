@@ -41,7 +41,7 @@ export class LessonController {
   }
 
   @Delete('/:id')
-  @UseGuards(AdminModAuthGuard)
+  // @UseGuards(AdminModAuthGuard)
   async deleteLesson(@Param('id') id: number): Promise<Response> {
     return this.lessonService.deleteLesson(id);
   }

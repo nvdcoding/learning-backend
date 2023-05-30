@@ -1,8 +1,15 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { of } from 'rxjs';
+import { Lesson } from 'src/models/entities/lesson.entity';
 import { UserCourse } from 'src/models/entities/user-course.entity';
 import { CourseRepository } from 'src/models/repositories/course.repository';
+import { ExcerciseRepository } from 'src/models/repositories/exercise.repository';
+import { LessonRepository } from 'src/models/repositories/lesson.repository';
+import { TestcaseRepository } from 'src/models/repositories/testcase.repository';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
+import { UserExerciseRepository } from 'src/models/repositories/user-exercise.repository';
+import { UserLessonRepository } from 'src/models/repositories/user-lesson.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
 import { CourseType, CourseStatus, Path } from 'src/shares/enum/course.enum';
@@ -25,6 +32,11 @@ export class CourseService {
     private readonly userRepository: UserRepository,
     private readonly userCourseRepository: UserCourseRepository,
     private readonly transactionRepository: TransactionRepository,
+    private readonly exerciseRepository: ExcerciseRepository,
+    private readonly lessonRepository: LessonRepository,
+    private readonly userLessonRepository: UserLessonRepository,
+    private readonly testcaseRepository: TestcaseRepository,
+    private readonly userExerciseRepository: UserExerciseRepository,
   ) {}
 
   async getAllCourses() {
@@ -190,6 +202,7 @@ export class CourseService {
   async deleteCourse(courseId: number): Promise<Response> {
     const course = await this.courseRepository.findOne({
       where: { id: courseId },
+      relations: ['lessons', 'userCourses'],
     });
     if (!course) {
       throw new HttpException(
@@ -197,7 +210,20 @@ export class CourseService {
         HttpStatus.BAD_REQUEST,
       );
     }
-    await this.courseRepository.softDelete(courseId);
+    const lessonsIds = course.lessons.map((e) => e.id);
+    const userCourseIds = course.userCourses.map((e) => e.id);
+    if (lessonsIds.length > 0) {
+      for (const id of lessonsIds) {
+        await this.deleteLesson(id);
+      }
+    }
+    if (userCourseIds.length > 0) {
+      for (const id of userCourseIds) {
+        await this.userCourseRepository.delete(id);
+      }
+    }
+
+    await this.courseRepository.delete(courseId);
     return { ...httpResponse.DELETE_COURSE_SUCCESS };
   }
 
@@ -305,5 +331,59 @@ export class CourseService {
     });
 
     return { ...httpResponse.GET_SUCCESS, data: userCourse };
+  }
+
+  private async deleteLesson(lessonId: number): Promise<Response> {
+    const lesson = await this.lessonRepository.findOne({
+      where: { id: lessonId },
+      relations: ['exercises', 'userLessons', 'course', 'course.lessons'],
+    });
+    if (!lesson) {
+      throw new HttpException(
+        httpErrors.LESSON_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const exerciesId = lesson.exercises.map((e) => e.id);
+    const userLessons = lesson.userLessons.map((e) => e.id);
+    if (exerciesId.length > 0) {
+      for (const id of exerciesId) {
+        await this.deleteExercise(id);
+      }
+    }
+    if (userLessons.length > 0) {
+      for (const id of userLessons) {
+        await this.userLessonRepository.delete(id);
+      }
+    }
+    await this.lessonRepository.delete(lessonId);
+    return httpResponse.DELETE_LESSON_SUCCES;
+  }
+  private async deleteExercise(exerciseId: number): Promise<Response> {
+    const exercise = await this.exerciseRepository.findOne({
+      where: {
+        id: exerciseId,
+      },
+      relations: ['testCases', 'userExercises'],
+    });
+    if (!exercise) {
+      throw new HttpException(
+        httpErrors.EXERCISE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const testCaseIds = exercise.testCases.map((e) => e.id);
+    const userExerciseIds = exercise.userExercises.map((e) => e.id);
+    const task = [];
+    if (testCaseIds.length > 0) {
+      task.push(this.testcaseRepository.delete([...testCaseIds]));
+    }
+    if (userExerciseIds.length > 0) {
+      task.push(this.userExerciseRepository.delete([...userExerciseIds]));
+    }
+
+    await Promise.all([...task]);
+    await this.exerciseRepository.delete(exercise.id);
+    return httpResponse.DELETE_EXCERCISE_SUCCES;
   }
 }

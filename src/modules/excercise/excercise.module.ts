@@ -30,5 +30,6 @@ import { LessonModule } from '../lesson/lesson.module';
   ],
   providers: [ExcerciseService],
   controllers: [ExcerciseController],
+  exports: [ExcerciseService],
 })
 export class ExcerciseModule {}

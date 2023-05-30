@@ -102,7 +102,7 @@ export class Course extends BaseEntity {
   @OneToMany(() => UserCourse, (UserCourse) => UserCourse.course)
   userCourses: UserCourse[];
 
-  @OneToMany(() => Lesson, (Lesson) => Lesson.course)
+  @OneToMany(() => Lesson, (Lesson) => Lesson.course, { cascade: true })
   lessons: Lesson[];
 
   @CreateDateColumn()

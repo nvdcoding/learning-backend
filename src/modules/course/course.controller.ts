@@ -77,7 +77,7 @@ export class CourseController {
   }
 
   @Delete('/:courseId')
-  @UseGuards(AdminModAuthGuard)
+  // @UseGuards(AdminModAuthGuard)
   async deleteCourse(@Param('courseId') courseId: number) {
     return this.courseService.deleteCourse(courseId);
   }

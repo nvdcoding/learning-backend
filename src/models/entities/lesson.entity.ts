@@ -35,13 +35,15 @@ export class Lesson {
   @JoinColumn({ name: 'course_id' })
   course: Course;
 
-  @OneToMany(() => Exercise, (exercise) => exercise.lesson)
+  @OneToMany(() => Exercise, (exercise) => exercise.lesson, { cascade: true })
   exercises: Exercise[];
 
   @OneToMany(() => Comment, (Comment) => Comment.lesson)
   comments: Comment[];
 
-  @OneToMany(() => UserLesson, (userLesson) => userLesson.lesson)
+  @OneToMany(() => UserLesson, (userLesson) => userLesson.lesson, {
+    cascade: true,
+  })
   userLessons: UserLesson[];
 
   @CreateDateColumn()

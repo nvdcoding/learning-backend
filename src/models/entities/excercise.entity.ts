@@ -35,7 +35,7 @@ export class Exercise {
   description: string;
 
   @OneToMany(() => UserExercise, (userExercise) => userExercise.exercise)
-  userExercises: [];
+  userExercises: UserExercise[];
 
   @OneToMany(() => TestCase, (testCase) => testCase.exercise, { cascade: true })
   testCases: TestCase[];

@@ -10,6 +10,7 @@ import { CourseRepository } from 'src/models/repositories/course.repository';
 import { ExcerciseRepository } from 'src/models/repositories/exercise.repository';
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
 import { NoteRepository } from 'src/models/repositories/note.repository';
+import { TestcaseRepository } from 'src/models/repositories/testcase.repository';
 import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { UserExerciseRepository } from 'src/models/repositories/user-exercise.repository';
 import { UserLessonRepository } from 'src/models/repositories/user-lesson.repository';
@@ -21,6 +22,7 @@ import { httpResponse } from 'src/shares/response';
 import { Response } from 'src/shares/response/response.interface';
 import { In } from 'typeorm';
 import { CourseService } from '../course/course.service';
+import { ExcerciseService } from '../excercise/excercise.service';
 import { CreateNoteDto } from './dtos/creaet-note.dto';
 import { CreateLessonDto } from './dtos/create-lesson.dto';
 import { GetLessonDto } from './dtos/get-lesson.dto';
@@ -38,6 +40,7 @@ export class LessonService {
     private readonly userLessonRepository: UserLessonRepository,
     private readonly exerciseRepository: ExcerciseRepository,
     private readonly userExerciseRepository: UserExerciseRepository,
+    private readonly testcaseRepository: TestcaseRepository,
   ) {}
 
   async getLessonOfCourse(courseId: number, role: string, userId?: number) {
@@ -382,7 +385,7 @@ export class LessonService {
   async deleteLesson(lessonId: number): Promise<Response> {
     const lesson = await this.lessonRepository.findOne({
       where: { id: lessonId },
-      relations: ['exercises'],
+      relations: ['exercises', 'userLessons', 'course', 'course.lessons'],
     });
     if (!lesson) {
       throw new HttpException(
@@ -390,11 +393,70 @@ export class LessonService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const exerciesId = lesson.exercises.map((e) => e.id);
-    await this.lessonRepository.softDelete(lessonId);
-    if (exerciesId.length > 0) {
-      await this.exerciseRepository.softDelete([...exerciesId]);
+
+    if (lesson.course.lessons.length === 1) {
+      throw new HttpException(
+        httpErrors.CANT_DELETE_LESSON,
+        HttpStatus.BAD_REQUEST,
+      );
     }
+    const exerciesId = lesson.exercises.map((e) => e.id);
+    const userLessons = lesson.userLessons.map((e) => e.id);
+    if (exerciesId.length > 0) {
+      for (const id of exerciesId) {
+        await this.deleteExercise(id);
+      }
+    }
+    if (userLessons.length > 0) {
+      for (const id of userLessons) {
+        await this.userLessonRepository.delete(id);
+      }
+    }
+
+    const { nextLesson, previousLesson } = await this.getPreviousAndNextLesson(
+      lesson,
+    );
+    const lastLessonId =
+      lesson.course.lessons[lesson.course.lessons.length - 1].id;
+    if (lastLessonId === lessonId) {
+      await this.userCourseRepository.update(
+        { currentLesson: lessonId },
+        { currentLesson: previousLesson.id },
+      );
+    } else {
+      await this.userCourseRepository.update(
+        { currentLesson: lessonId },
+        { currentLesson: nextLesson.id },
+      );
+    }
+    await this.lessonRepository.delete(lessonId);
     return httpResponse.DELETE_LESSON_SUCCES;
+  }
+  private async deleteExercise(exerciseId: number): Promise<Response> {
+    const exercise = await this.exerciseRepository.findOne({
+      where: {
+        id: exerciseId,
+      },
+      relations: ['testCases', 'userExercises'],
+    });
+    if (!exercise) {
+      throw new HttpException(
+        httpErrors.EXERCISE_NOT_FOUND,
+        HttpStatus.NOT_FOUND,
+      );
+    }
+    const testCaseIds = exercise.testCases.map((e) => e.id);
+    const userExerciseIds = exercise.userExercises.map((e) => e.id);
+    const task = [];
+    if (testCaseIds.length > 0) {
+      task.push(this.testcaseRepository.delete([...testCaseIds]));
+    }
+    if (userExerciseIds.length > 0) {
+      task.push(this.userExerciseRepository.delete([...userExerciseIds]));
+    }
+
+    await Promise.all([...task]);
+    await this.exerciseRepository.delete(exercise.id);
+    return httpResponse.DELETE_EXCERCISE_SUCCES;
   }
 }

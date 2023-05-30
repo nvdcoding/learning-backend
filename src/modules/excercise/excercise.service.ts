@@ -285,7 +285,7 @@ export class ExcerciseService {
       where: {
         id: exerciseId,
       },
-      relations: ['testCases'],
+      relations: ['testCases', 'userExercises'],
     });
     if (!exercise) {
       throw new HttpException(
@@ -293,11 +293,18 @@ export class ExcerciseService {
         HttpStatus.NOT_FOUND,
       );
     }
-    const userExerciseIds = exercise.testCases.map((e) => e.id);
-    await Promise.all([
-      this.testcaseRepository.softDelete([...userExerciseIds]),
-      this.excerciseRepository.softDelete(exercise.id),
-    ]);
+    const testCaseIds = exercise.testCases.map((e) => e.id);
+    const userExerciseIds = exercise.userExercises.map((e) => e.id);
+    const task = [];
+    if (testCaseIds.length > 0) {
+      task.push(this.testcaseRepository.delete([...testCaseIds]));
+    }
+    if (userExerciseIds.length > 0) {
+      task.push(this.userExerciseRepository.delete([...userExerciseIds]));
+    }
+
+    await Promise.all([...task]);
+    await this.excerciseRepository.delete(exercise.id);
     return httpResponse.DELETE_EXCERCISE_SUCCES;
   }
 }
