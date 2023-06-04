@@ -23,4 +23,10 @@ export class StatisticController {
   async getInfoSystem(): Promise<Response> {
     return this.statisticService.getInfoSystem();
   }
+
+  @Get('/chart')
+  // @UseGuards(AdminAuthGuard)
+  async getChart(): Promise<Response> {
+    return this.statisticService.getChartCourse();
+  }
 }

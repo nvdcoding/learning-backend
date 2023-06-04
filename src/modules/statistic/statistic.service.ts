@@ -5,6 +5,7 @@ import { ExcerciseRepository } from 'src/models/repositories/exercise.repository
 import { LessonRepository } from 'src/models/repositories/lesson.repository';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { TransactionRepository } from 'src/models/repositories/transaction.repository';
+import { UserCourseRepository } from 'src/models/repositories/user-course.repository';
 import { UserRepository } from 'src/models/repositories/user.repository';
 import {
   BasePaginationRequestDto,
@@ -27,6 +28,7 @@ export class StatisticService {
     private readonly courseRepository: CourseRepository,
     private readonly commentRepository: CommentRepository,
     private readonly exerciseRepository: ExcerciseRepository,
+    private readonly userCourseRepository: UserCourseRepository,
   ) {}
 
   async getTransactions(options: BasePaginationRequestDto): Promise<Response> {
@@ -73,5 +75,21 @@ export class StatisticService {
     };
   }
 
-  async;
+  async getChartCourse(): Promise<Response> {
+    const counts = await this.userCourseRepository
+      .createQueryBuilder('userCourse')
+      .select('userCourse.course.id', 'courseId')
+      .addSelect('course.name', 'name')
+      .addSelect('COUNT(userCourse.id)', 'count')
+      .groupBy('userCourse.course.id')
+      .leftJoinAndSelect('userCourse.course', 'course')
+      .getRawMany();
+
+    return {
+      ...httpResponse.GET_SUCCESS,
+      data: counts.map((e) => {
+        return [e.name, +e.count];
+      }),
+    };
+  }
 }
