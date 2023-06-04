@@ -11,7 +11,7 @@ import { StatisticService } from './statistic.service';
 export class StatisticController {
   constructor(private readonly statisticService: StatisticService) {}
   @Get('/transaction')
-  // @UseGuards(AdminAuthGuard)
+  @UseGuards(AdminAuthGuard)
   async getTransactions(
     @Query() options: BasePaginationRequestDto,
   ): Promise<Response> {
@@ -19,13 +19,13 @@ export class StatisticController {
   }
 
   @Get('/systems')
-  // @UseGuards(AdminAuthGuard)
+  @UseGuards(AdminAuthGuard)
   async getInfoSystem(): Promise<Response> {
     return this.statisticService.getInfoSystem();
   }
 
   @Get('/chart')
-  // @UseGuards(AdminAuthGuard)
+  @UseGuards(AdminAuthGuard)
   async getChart(): Promise<Response> {
     return this.statisticService.getChartCourse();
   }
