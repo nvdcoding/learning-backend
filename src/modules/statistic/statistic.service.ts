@@ -83,6 +83,8 @@ export class StatisticService {
       .addSelect('COUNT(userCourse.id)', 'count')
       .groupBy('userCourse.course.id')
       .leftJoinAndSelect('userCourse.course', 'course')
+      .orderBy('count', 'DESC')
+      .take(5)
       .getRawMany();
 
     return {
