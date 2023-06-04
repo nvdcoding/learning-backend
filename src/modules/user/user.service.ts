@@ -24,9 +24,11 @@ import {
 } from 'src/shares/dtos/base-pagination.dto';
 import { PostRepository } from 'src/models/repositories/post.repository';
 import { PostStatus } from 'src/shares/enum/post.enum';
-import { Between, In, Not } from 'typeorm';
+import { Between, In, Like, Not } from 'typeorm';
 import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
 import { GetTransactionDto } from './dtos/get-transaction.dto';
+import { CourseRepository } from 'src/models/repositories/course.repository';
+import { SearchDto } from './dtos/search.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getIP = promisify(require('external-ip')());
 @Injectable()
@@ -36,6 +38,7 @@ export class UserService {
     private readonly transactionRepository: TransactionRepository,
     private readonly userPreferRepository: UserPreferRepository,
     private readonly postRepository: PostRepository,
+    private readonly courseRepository: CourseRepository,
   ) {}
 
   // async getAllCourses() {
@@ -340,5 +343,26 @@ export class UserService {
         limit,
       ),
     };
+  }
+
+  async search(options: SearchDto): Promise<Response> {
+    const { limit, page, keyword } = options;
+    const [posts, courses] = await Promise.all([
+      this.postRepository.find({
+        where: {
+          title: Like(`%${keyword}%`),
+        },
+        skip: (page - 1) * limit,
+        take: limit,
+        order: { id: 'DESC' },
+      }),
+      this.courseRepository.find({
+        where: { name: Like(`%${keyword}%`) },
+        order: { id: 'DESC' },
+        skip: (page - 1) * limit,
+        take: limit,
+      }),
+    ]);
+    return { ...httpResponse.GET_SUCCESS, data: { posts, courses } };
   }
 }
