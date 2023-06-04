@@ -29,6 +29,7 @@ import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
 import { GetTransactionDto } from './dtos/get-transaction.dto';
 import { CourseRepository } from 'src/models/repositories/course.repository';
 import { SearchDto } from './dtos/search.dto';
+import { UpdateInforDto } from './dtos/update-info.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const getIP = promisify(require('external-ip')());
 @Injectable()
@@ -364,5 +365,22 @@ export class UserService {
       }),
     ]);
     return { ...httpResponse.GET_SUCCESS, data: { posts, courses } };
+  }
+
+  async updateUserInfo(
+    body: UpdateInforDto,
+    userId: number,
+  ): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+    });
+    if (!user) {
+      throw new HttpException(httpErrors.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    await this.userRepository.update(
+      { id: user.id },
+      { name: body.name, avatar: body.avatar ? body.avatar : null },
+    );
+    return httpResponse.UPDATE_USER_SUCCESS;
   }
 }

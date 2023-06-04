@@ -20,6 +20,7 @@ import { DepositDto } from './dtos/deposit.dto';
 import { AdminGetUsersDto } from './dtos/get-list-user.dto';
 import { GetTransactionDto } from './dtos/get-transaction.dto';
 import { SearchDto } from './dtos/search.dto';
+import { UpdateInforDto } from './dtos/update-info.dto';
 import { UserPreferDto } from './dtos/update-user-setting.dto';
 import { UserService } from './user.service';
 
@@ -73,6 +74,15 @@ export class UserController {
     @Body() body: AdminChangeStatusUserDto,
   ): Promise<Response> {
     return this.userService.changeUserStatus(body);
+  }
+
+  @Put('/profile')
+  @UseGuards(UserAuthGuard)
+  async updateInformation(
+    @Body() body: UpdateInforDto,
+    @UserID() userId: number,
+  ): Promise<Response> {
+    return this.userService.updateUserInfo(body, userId);
   }
 
   @Get('/')
