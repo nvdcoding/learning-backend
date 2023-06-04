@@ -6,7 +6,8 @@ import {
   BasePaginationRequestDto,
   BasePaginationResponseDto,
 } from 'src/shares/dtos/base-pagination.dto';
-import { AdminAction, PostStatus } from 'src/shares/enum/post.enum';
+import { Path } from 'src/shares/enum/course.enum';
+import { AdminAction, PostStatus, Topics } from 'src/shares/enum/post.enum';
 import { UserStatus } from 'src/shares/enum/user.enum';
 import { httpErrors } from 'src/shares/exceptions';
 import { httpResponse } from 'src/shares/response';
@@ -271,5 +272,42 @@ export class PostService {
     // send mail
     await this.postRepository.softDelete(post.id);
     return httpResponse.DELETE_POST_SUCCESS;
+  }
+
+  async getPreferPost(userId: number): Promise<Response> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId, verifyStatus: UserStatus.ACTIVE },
+      relations: ['userPrefer'],
+    });
+    const postMap = user.userPrefer;
+    const path = [];
+    if (postMap.topicBackend) {
+      path.push(Topics.BACKEND);
+    }
+    if (postMap.topicBasic) {
+      path.push(Topics.BASIC);
+    }
+    if (postMap.topicFrontEnd) {
+      path.push(Topics.FRONTEND);
+    }
+    if (postMap.topicMobile) {
+      path.push(Topics.MOBILE);
+    }
+    if (postMap.topicsDevops) {
+      path.push(Topics.DEVOPS);
+    }
+    if (postMap.topicOther) {
+      path.push(Path.OTHER);
+    }
+    const data = await this.postRepository.find({
+      where: {
+        topic: In(path),
+      },
+      order: {
+        id: 'DESC',
+      },
+    });
+
+    return { ...httpResponse.GET_SUCCESS, data };
   }
 }

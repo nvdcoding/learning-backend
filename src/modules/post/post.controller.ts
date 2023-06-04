@@ -105,4 +105,10 @@ export class PostController {
   async adminDeletePost(@Param('id') postId: number): Promise<Response> {
     return this.postService.adminDeletePost(postId);
   }
+
+  @Get('/prefer')
+  @UseGuards(UserAuthGuard)
+  async getPreferPost(@UserID() userId: number): Promise<Response> {
+    return this.postService.getPreferPost(userId);
+  }
 }
