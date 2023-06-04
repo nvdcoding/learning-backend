@@ -14,4 +14,5 @@ export interface IJwtAdminPayload {
   role: AdminRole;
   status: AdminStatus;
   username: string;
+  level: number;
 }

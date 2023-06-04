@@ -77,8 +77,8 @@ export class AdminService {
         role: role === AdminRole.ADMIN ? AdminRole.ADMIN : AdminRole.MOD,
         permission:
           role === AdminRole.ADMIN
-            ? permissions.filter((e) => e.level === 1)[0]
-            : permissions.filter((e) => e.level === 4)[0],
+            ? permissions.filter((e) => e.level === 4)[0]
+            : permissions.filter((e) => e.level === 1)[0],
       }),
     ]);
     return httpResponse.CREATE_ADMIN_SUCCESS;
@@ -178,4 +178,6 @@ export class AdminService {
     await this.adminRepository.delete(modId);
     return httpResponse.DELETE_MOD_SUCCESS;
   }
+
+  // async checkPermission(level: number, required: ): Promise<boolean> {}
 }

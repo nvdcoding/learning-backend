@@ -223,9 +223,9 @@ export class AuthService {
 
     const adminExisted = await this.adminRepositoty.findOne({
       where: { username },
-      select: ['id', 'username', 'role', 'password'],
+      select: ['id', 'username', 'role', 'password', 'permission'],
+      relations: ['permission'],
     });
-
     if (!adminExisted)
       throw new HttpException(
         httpErrors.ADMIN_LOGIN_FAIL,
@@ -255,6 +255,7 @@ export class AuthService {
       role: adminExisted.role,
       status: adminExisted.status,
       username: adminExisted.username,
+      level: adminExisted.permission.level,
     } as IJwtAdminPayload;
 
     const accessToken = this.jwtService.sign(payload, { expiresIn: '1h' });

@@ -18,6 +18,7 @@ import { MailModule } from './modules/mail/mail.module';
 import { PermissionModule } from './modules/permission/permission.module';
 import { PostModule } from './modules/post/post.module';
 import { ReportModule } from './modules/report/report.module';
+import { StatisticModule } from './modules/statistic/statistic.module';
 import { UserModule } from './modules/user/user.module';
 const Modules = [
   Logger,
@@ -44,5 +45,6 @@ const Modules = [
   PostModule,
   CommentModule,
   ReportModule,
+  StatisticModule,
 ];
 export default Modules;
