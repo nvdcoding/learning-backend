@@ -59,7 +59,10 @@ export const httpErrors = {
     message: `Register token not match`,
     code: `ERR_REGISTER_002`,
   },
-
+  PASSWORD_NOT_MATCH: {
+    message: `Mật khẩu không đúng`,
+    code: `ERR_PASSWORD_001`,
+  },
   // COURSE
   COURSE_FOUND: {
     message: `Course found!`,
@@ -125,5 +128,14 @@ export const httpErrors = {
   USER_LESSON_NOT_FOUND: {
     message: 'User lesson not found',
     code: 'ERR_COMMENT_001',
+  },
+  // FORGOT PASSS
+  FORGOT_PASSWORD_DIFFERENCE_PASSWORD: {
+    message: 'Mật khẩu mới phải khác mật khẩu cũ',
+    code: 'ERR_FORGOT_PASSWORD_001',
+  },
+  FORGOT_PASSWORD_OTP_NOT_MATCH: {
+    message: 'OTP không khớp',
+    code: 'ERR_FORGOT_PASSWORD_002',
   },
 };

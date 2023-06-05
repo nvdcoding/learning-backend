@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { RegisterDto } from '../auth/dto/register.dto';
 import { RegisterEmailDto } from './dto/register-email.dto';
 import { CreateAdminDto } from './dto/send-create-admin-email.dto';
+import { ForgotPasswordEmailDto } from './dto/forgot-password-email.dto';
 
 @Injectable()
 export class MailService {
@@ -19,6 +20,14 @@ export class MailService {
   async sendCreateAdmin(createAdminDto: CreateAdminDto): Promise<void> {
     await this.emailQueue.add('sendCreateAdminMail', {
       ...createAdminDto,
+    });
+  }
+
+  async sendForgotPasswordMail(
+    forgotPasswordDto: ForgotPasswordEmailDto,
+  ): Promise<void> {
+    await this.emailQueue.add('sendForgotPasswordMail', {
+      ...forgotPasswordDto,
     });
   }
 }
