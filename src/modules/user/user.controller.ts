@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { PermissionLevel } from 'src/shares/decorators/level-permission.decorator';
 import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 import { Response } from 'src/shares/response/response.interface';
+import { AdminService } from '../admin/admin.service';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { AdminChangeStatusUserDto } from './dtos/change-user-status.dto';
@@ -28,7 +30,10 @@ import { UserService } from './user.service';
 @ApiTags('User')
 @ApiBearerAuth()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly adminService: AdminService,
+  ) {}
 
   @Get('/ipn')
   async webhookIPN(@Query() query) {
@@ -72,7 +77,9 @@ export class UserController {
   @UseGuards(AdminModAuthGuard)
   async changeStatusUser(
     @Body() body: AdminChangeStatusUserDto,
+    @PermissionLevel() level: number,
   ): Promise<Response> {
+    await this.adminService.checkPermission(level, { user: true });
     return this.userService.changeUserStatus(body);
   }
 
@@ -87,7 +94,11 @@ export class UserController {
 
   @Get('/')
   @UseGuards(AdminModAuthGuard)
-  async getListUser(@Query() options: AdminGetUsersDto): Promise<Response> {
+  async getListUser(
+    @Query() options: AdminGetUsersDto,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, { user: true });
     return this.userService.getListUser(options);
   }
 
@@ -98,7 +109,11 @@ export class UserController {
 
   @Delete('/:id')
   @UseGuards(AdminModAuthGuard)
-  async deleteUser(@Param('id') userId: number): Promise<Response> {
+  async deleteUser(
+    @Param('id') userId: number,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, { user: true });
     return this.userService.deleteUser(userId);
   }
 
