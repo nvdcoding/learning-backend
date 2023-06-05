@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { PermissionLevel } from 'src/shares/decorators/level-permission.decorator';
 import { BasePaginationRequestDto } from 'src/shares/dtos/base-pagination.dto';
 import { Response } from 'src/shares/response/response.interface';
+import { AdminService } from '../admin/admin.service';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 import { AdminGetBlogDto } from './dtos/admin-get-blog.dto';
@@ -26,7 +28,10 @@ import { PostService } from './post.service';
 @ApiTags('Post')
 @ApiBearerAuth()
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(
+    private readonly postService: PostService,
+    private readonly adminService: AdminService,
+  ) {}
 
   @Get('/user/:id')
   async getOnePost(@Param('id') id: number): Promise<Response> {
@@ -76,13 +81,25 @@ export class PostController {
 
   @Get('/admin')
   @UseGuards(AdminModAuthGuard)
-  async adminGetPost(@Query() options: AdminGetBlogDto): Promise<Response> {
+  async adminGetPost(
+    @Query() options: AdminGetBlogDto,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, {
+      post: true,
+    });
     return this.postService.adminGetPostByStatus(options);
   }
 
   @Get('/admin/:id')
   @UseGuards(AdminModAuthGuard)
-  async adminGetOnePost(@Param('id') id: number): Promise<Response> {
+  async adminGetOnePost(
+    @Param('id') id: number,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, {
+      post: true,
+    });
     return this.postService.adminGetOnePost(id);
   }
 
@@ -90,25 +107,47 @@ export class PostController {
   @UseGuards(AdminModAuthGuard)
   async adminApproveUpdatePost(
     @Body() body: AdminApproveRequest,
+    @PermissionLevel() level: number,
   ): Promise<Response> {
+    await this.adminService.checkPermission(level, {
+      post: true,
+    });
     return this.postService.adminApproveUpdateRequest(body);
   }
 
   @Put('/admin')
   @UseGuards(AdminModAuthGuard)
-  async adminApprovePost(@Body() body: UpdateStatusBlogDto): Promise<Response> {
+  async adminApprovePost(
+    @Body() body: UpdateStatusBlogDto,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, {
+      post: true,
+    });
     return this.postService.adminUpdateStatusPost(body);
   }
 
   @Delete('/admin/:id')
   @UseGuards(AdminModAuthGuard)
-  async adminDeletePost(@Param('id') postId: number): Promise<Response> {
+  async adminDeletePost(
+    @Param('id') postId: number,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, {
+      post: true,
+    });
     return this.postService.adminDeletePost(postId);
   }
 
   @Get('/prefer')
   @UseGuards(UserAuthGuard)
-  async getPreferPost(@UserID() userId: number): Promise<Response> {
+  async getPreferPost(
+    @UserID() userId: number,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, {
+      post: true,
+    });
     return this.postService.getPreferPost(userId);
   }
 }

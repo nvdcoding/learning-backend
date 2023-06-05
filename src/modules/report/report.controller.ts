@@ -10,7 +10,9 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { PermissionLevel } from 'src/shares/decorators/level-permission.decorator';
 import { Response } from 'src/shares/response/response.interface';
+import { AdminService } from '../admin/admin.service';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
 
@@ -23,7 +25,10 @@ import { ReportService } from './report.service';
 @ApiTags('Report')
 @ApiBearerAuth()
 export class ReportController {
-  constructor(private readonly reportService: ReportService) {}
+  constructor(
+    private readonly reportService: ReportService,
+    private readonly adminService: AdminService,
+  ) {}
 
   @Post('/post')
   @UseGuards(UserAuthGuard)
@@ -36,13 +41,21 @@ export class ReportController {
 
   @Get('/admin/post')
   @UseGuards(AdminModAuthGuard)
-  async getReportPost(@Query() options: GetReportDto): Promise<Response> {
+  async getReportPost(
+    @Query() options: GetReportDto,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, { report: true });
     return this.reportService.getReportPost(options);
   }
 
   @Put('/admin/post')
   @UseGuards(AdminModAuthGuard)
-  async handleReportPost(@Body() body: HandleReportPostDto): Promise<Response> {
+  async handleReportPost(
+    @Body() body: HandleReportPostDto,
+    @PermissionLevel() level: number,
+  ): Promise<Response> {
+    await this.adminService.checkPermission(level, { report: true });
     return this.reportService.handleReportPost(body);
   }
 }

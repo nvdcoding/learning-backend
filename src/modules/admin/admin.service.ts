@@ -25,6 +25,7 @@ import { AdminUpdateMod } from './dtos/update-mod.dto';
 import { GetListAdminDto } from './dtos/get-list-admin.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { Admin } from 'src/models/entities/admin.entity';
+import { CheckPermissionDto } from './dtos/check-permission.dto';
 
 @Injectable()
 export class AdminService {
@@ -179,5 +180,84 @@ export class AdminService {
     return httpResponse.DELETE_MOD_SUCCESS;
   }
 
-  // async checkPermission(level: number, required: ): Promise<boolean> {}
+  async checkPermission(
+    level: number,
+    required: CheckPermissionDto,
+  ): Promise<boolean> {
+    const permission = await this.permissionRepository.findOne({
+      where: { level },
+    });
+    const { post, report, user, exercise, lesson, course, mod } = required;
+    if (post) {
+      if (permission.post) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    if (report) {
+      if (permission.report) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    if (user) {
+      if (permission.user) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    if (exercise) {
+      if (permission.exercise) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    if (lesson) {
+      if (permission.lesson) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    if (course) {
+      if (permission.course) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    if (mod) {
+      if (permission.mod) {
+        return true;
+      } else {
+        throw new HttpException(
+          httpErrors.UNAUTHORIZED,
+          HttpStatus.NOT_ACCEPTABLE,
+        );
+      }
+    }
+    return true;
+  }
 }

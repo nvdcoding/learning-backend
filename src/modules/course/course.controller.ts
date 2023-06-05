@@ -11,8 +11,10 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { PermissionLevel } from 'src/shares/decorators/level-permission.decorator';
 import { UserOrGuest } from 'src/shares/decorators/user-or-guest.decorator';
 import { Response } from 'src/shares/response/response.interface';
+import { AdminService } from '../admin/admin.service';
 import { AdminAuthGuard } from '../auth/guard/admin-auth.guard';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
@@ -25,7 +27,10 @@ import { UpdateCourseDto } from './dtos/update-course.dto';
 @ApiTags('Course')
 @ApiBearerAuth()
 export class CourseController {
-  constructor(private readonly courseService: CourseService) {}
+  constructor(
+    private readonly courseService: CourseService,
+    private readonly adminService: AdminService,
+  ) {}
 
   @Get('/')
   async getAllCourses(): Promise<Response> {
@@ -52,12 +57,6 @@ export class CourseController {
     return this.courseService.getOneCourse(courseId, user);
   }
 
-  @Post('/')
-  @UseGuards(AdminModAuthGuard)
-  async createCourse(@Body() body: CreateCourseDto) {
-    return this.courseService.createCourse(body);
-  }
-
   @Post('/register')
   @UseGuards(UserAuthGuard)
   async registerCourse(
@@ -67,18 +66,34 @@ export class CourseController {
     return this.courseService.registerCourse(body.courseId, userId);
   }
 
+  @Post('/')
+  @UseGuards(AdminModAuthGuard)
+  async createCourse(
+    @Body() body: CreateCourseDto,
+    @PermissionLevel() level: number,
+  ) {
+    await this.adminService.checkPermission(level, { course: true });
+    return this.courseService.createCourse(body);
+  }
+
   @Put('/:courseId')
   @UseGuards(AdminModAuthGuard)
   async updateCourse(
     @Body() body: UpdateCourseDto,
     @Param('courseId') courseId: number,
+    @PermissionLevel() level: number,
   ) {
+    await this.adminService.checkPermission(level, { course: true });
     return this.courseService.updateCourse(body, courseId);
   }
 
   @Delete('/:courseId')
   @UseGuards(AdminModAuthGuard)
-  async deleteCourse(@Param('courseId') courseId: number) {
+  async deleteCourse(
+    @Param('courseId') courseId: number,
+    @PermissionLevel() level: number,
+  ) {
+    await this.adminService.checkPermission(level, { course: true });
     return this.courseService.deleteCourse(courseId);
   }
 }

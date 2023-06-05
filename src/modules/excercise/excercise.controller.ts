@@ -11,7 +11,9 @@ import {
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 import { UserID } from 'src/shares/decorators/get-user-id.decorator';
+import { PermissionLevel } from 'src/shares/decorators/level-permission.decorator';
 import { Response } from 'src/shares/response/response.interface';
+import { AdminService } from '../admin/admin.service';
 import { AdminModAuthGuard } from '../auth/guard/admin-mod-auth-guard';
 import { IsLoginAuthGuard } from '../auth/guard/is-login.guard';
 import { UserAuthGuard } from '../auth/guard/user-auth.guard';
@@ -25,7 +27,10 @@ import { ExcerciseService } from './excercise.service';
 @ApiTags('Excercise')
 @ApiBearerAuth()
 export class ExcerciseController {
-  constructor(private readonly excerciseService: ExcerciseService) {}
+  constructor(
+    private readonly excerciseService: ExcerciseService,
+    private readonly adminService: AdminService,
+  ) {}
 
   // @Get('/:lessonId')
   // async getAllCourses(): Promise<Response> {
@@ -34,35 +39,59 @@ export class ExcerciseController {
 
   @Delete('/:id')
   @UseGuards(AdminModAuthGuard)
-  async deleteExercise(@Param('id') id: number) {
+  async deleteExercise(
+    @Param('id') id: number,
+    @PermissionLevel() level: number,
+  ) {
+    await this.adminService.checkPermission(level, { exercise: true });
     return this.excerciseService.deleteExercise(id);
   }
 
   @Post('/')
   @UseGuards(AdminModAuthGuard)
-  async createExcercise(@Body() body: CreateExcerciseDto) {
+  async createExcercise(
+    @Body() body: CreateExcerciseDto,
+    @PermissionLevel() level: number,
+  ) {
+    await this.adminService.checkPermission(level, { exercise: true });
     return this.excerciseService.createExcercise(body.lessonId, body);
   }
 
   @Put('/')
   @UseGuards(AdminModAuthGuard)
-  async updateExercise(@Body() body: UpdateExerciseDto) {
+  async updateExercise(
+    @Body() body: UpdateExerciseDto,
+    @PermissionLevel() level: number,
+  ) {
+    await this.adminService.checkPermission(level, { exercise: true });
     return this.excerciseService.updateExercise(body);
   }
 
   @Get('/admin')
   @UseGuards(AdminModAuthGuard)
-  async adminGetExcerciseOfLesson(@Query() query: GetExerciseDto) {
+  async adminGetExcerciseOfLesson(
+    @Query() query: GetExerciseDto,
+    @PermissionLevel() level: number,
+  ) {
+    await this.adminService.checkPermission(level, { exercise: true });
+
     return this.excerciseService.getExcercises(+query.lessionId);
   }
 
-  @Get('/user')
-  @UseGuards(UserAuthGuard)
-  async userGetExcerciseOfLesson(
-    @Query() query: GetExerciseDto,
-    @UserID() userId: number,
+  @Get('/admin/:exerciseId')
+  @UseGuards(AdminModAuthGuard)
+  async adminGetOneExercise(
+    @Param('exerciseId') exerciseId: number,
+    @PermissionLevel() level: number,
   ) {
-    return this.excerciseService.getExcercises(+query.lessionId, userId);
+    await this.adminService.checkPermission(level, { exercise: true });
+    return this.excerciseService.getOneExcercise(exerciseId);
+  }
+
+  @Post('/do-exercise')
+  @UseGuards(UserAuthGuard)
+  async doExercise(@Body() body: DoExerciseDto, @UserID() userId: number) {
+    return this.excerciseService.doExercise(body, userId);
   }
 
   @Get('/user/:exerciseId')
@@ -74,15 +103,12 @@ export class ExcerciseController {
     return this.excerciseService.getOneExcercise(exerciseId, userId);
   }
 
-  @Get('/admin/:exerciseId')
-  @UseGuards(AdminModAuthGuard)
-  async adminGetOneExercise(@Param('exerciseId') exerciseId: number) {
-    return this.excerciseService.getOneExcercise(exerciseId);
-  }
-
-  @Post('/do-exercise')
+  @Get('/user')
   @UseGuards(UserAuthGuard)
-  async doExercise(@Body() body: DoExerciseDto, @UserID() userId: number) {
-    return this.excerciseService.doExercise(body, userId);
+  async userGetExcerciseOfLesson(
+    @Query() query: GetExerciseDto,
+    @UserID() userId: number,
+  ) {
+    return this.excerciseService.getExcercises(+query.lessionId, userId);
   }
 }

@@ -25,7 +25,7 @@ export class StatisticController {
   }
 
   @Get('/chart')
-  // @UseGuards(AdminAuthGuard)
+  @UseGuards(AdminAuthGuard)
   async getChart(): Promise<Response> {
     return this.statisticService.getChartCourse();
   }

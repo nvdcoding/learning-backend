@@ -27,6 +27,9 @@ export class Permission {
   @Column({ nullable: false, name: 'course', type: 'boolean' })
   course: boolean;
 
+  @Column({ nullable: false, name: 'mod', type: 'boolean' })
+  mod: boolean;
+
   @OneToMany(() => Admin, (admin) => admin.permission)
   admins: Admin[];
 }
