@@ -39,9 +39,9 @@ export class AdminController {
   @Post('/active-admin')
   async activeAdmin(
     @Body() body: ActiveAdminDto,
-    @PermissionLevel() level: number,
+    // @PermissionLevel() level: number,
   ): Promise<Response> {
-    await this.adminService.checkPermission(level, { mod: true });
+    // await this.adminService.checkPermission(level, { mod: true });
     return this.adminService.activeAccount(body);
   }
 

@@ -1,4 +1,4 @@
-export interface CheckPermissionDto {
+export interface IPermission {
   post?: boolean;
   report?: boolean;
   user?: boolean;

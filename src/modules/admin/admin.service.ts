@@ -25,7 +25,7 @@ import { AdminUpdateMod } from './dtos/update-mod.dto';
 import { GetListAdminDto } from './dtos/get-list-admin.dto';
 import { BasePaginationResponseDto } from 'src/shares/dtos/base-pagination.dto';
 import { Admin } from 'src/models/entities/admin.entity';
-import { CheckPermissionDto } from './dtos/check-permission.dto';
+import { IPermission } from './dtos/check-permission.dto';
 
 @Injectable()
 export class AdminService {
@@ -182,7 +182,7 @@ export class AdminService {
 
   async checkPermission(
     level: number,
-    required: CheckPermissionDto,
+    required: IPermission,
   ): Promise<boolean> {
     const permission = await this.permissionRepository.findOne({
       where: { level },
