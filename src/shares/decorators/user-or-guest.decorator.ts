@@ -13,8 +13,8 @@ export const UserOrGuest = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     try {
       const token = request.headers.authorization;
-      console.log(token);
-      if (!token || (token && token.role)) {
+      console.log({ token: jwtDecode(token) });
+      if (!token || (token && (jwtDecode(token) as any).role)) {
         return null;
       }
       const payload: IJwtPayload = jwtDecode(token);
