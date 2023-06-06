@@ -14,7 +14,7 @@ export const UserOrGuest = createParamDecorator(
     try {
       const token = request.headers.authorization;
       console.log(token);
-      if (!token) {
+      if (!token || token.role) {
         return null;
       }
       const payload: IJwtPayload = jwtDecode(token);
