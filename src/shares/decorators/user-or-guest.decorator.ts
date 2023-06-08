@@ -20,6 +20,7 @@ export const UserOrGuest = createParamDecorator(
       const payload: IJwtPayload = jwtDecode(token);
       return payload.id;
     } catch (e) {
+      console.log('111111111', { e });
       throw new HttpException(httpErrors.UNAUTHORIZED, HttpStatus.BAD_REQUEST);
     }
   },
