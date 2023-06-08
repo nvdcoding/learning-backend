@@ -143,11 +143,11 @@ export class PostController {
   @UseGuards(UserAuthGuard)
   async getPreferPost(
     @UserID() userId: number,
-    @PermissionLevel() level: number,
+    // @PermissionLevel() level: number,
   ): Promise<Response> {
-    await this.adminService.checkPermission(level, {
-      post: true,
-    });
+    // await this.adminService.checkPermission(level, {
+    //   post: true,
+    // });
     return this.postService.getPreferPost(userId);
   }
 }
